@@ -10,3 +10,17 @@
   background-color: #94a3b8;
   color: #0f172a;
 }
+
+.active {
+  color: #f1f5f9;
+}
+.active::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 3px;
+  border-radius: 100vw;
+  bottom: 0;
+  background-color: #f1f5f9;
+}
