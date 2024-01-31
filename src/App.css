@@ -24,3 +24,11 @@
   bottom: 0;
   background-color: #f1f5f9;
 }
+
+.home {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.home::-webkit-scrollbar {
+  display: none;
+}
