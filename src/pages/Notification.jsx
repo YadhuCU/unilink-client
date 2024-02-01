@@ -2,13 +2,13 @@ import PropTypes from "prop-types";
 import { LeftSidebar } from "../components/LeftSidebar";
 import { RightSidebar } from "../components/RightSidebar";
 
-Profile.propTypes = {};
+Notification.propTypes = {};
 
-export function Profile() {
+export function Notification() {
   return (
     <>
       <LeftSidebar />
-      <div>Profile</div>
+      <div>Notification</div>
       <RightSidebar />
     </>
   );

@@ -1,7 +1,13 @@
 import PropTypes from "prop-types";
+import { LeftSidebar } from "../components/LeftSidebar";
 
 Message.propTypes = {};
 
 export function Message() {
-  return <div>Message</div>;
+  return (
+    <>
+      <LeftSidebar />
+      <div>Message</div>
+    </>
+  );
 }
