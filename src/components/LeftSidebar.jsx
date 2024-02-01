@@ -42,9 +42,14 @@ export function LeftSidebar() {
   }, []);
 
   return (
-    <div className="flex flex-col gap-10 p-4 pl-0">
-      <h1 className="text-5xl font-bold px-5 cursor-pointer">UL</h1>
-      <ul ref={ulRef} className="flex flex-col gap-5 items-start">
+    <div className="absolute bottom-0 w-full bg-slate-950 md:static flex flex-col gap-10 px-4 md:p-4 pl-0">
+      <h1 className="hidden md:block text-5xl font-bold px-5 cursor-pointer">
+        UL
+      </h1>
+      <ul
+        ref={ulRef}
+        className="flex md:flex-col md:gap-5 justify-around items-start"
+      >
         <li className="flex gap-4 items-center px-5 py-3 rounded-full hover:bg-slate-900 transition cursor-pointer">
           <FaHome className="text-3xl" />
           <div className="text-2xl hidden md:block">Home</div>
@@ -66,7 +71,7 @@ export function LeftSidebar() {
           <div className="text-2xl hidden md:block">Profile</div>
         </li>
       </ul>
-      <div className="flex flex-col gap-5 mt-auto px-5">
+      <div className="hidden md:flex flex-col gap-5 mt-auto px-5">
         <Button classes="py-3">Create Post</Button>
         <div className="flex gap-3 items-center">
           <img

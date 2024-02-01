@@ -12,13 +12,15 @@ export function Post({ post }) {
   console.log("Post", post);
   return (
     <div className="flex gap-4 items-start p-4 border-b-2 border-slate-900">
-      <img
-        width={50}
-        height={50}
-        className="w-[50px] h-[50px] object-cover rounded-full"
-        src="https://source.unsplash.com/random"
-      />
-      <div className="flex flex-col w-full gap-4">
+      <div className="w-[50px] h-[50px] rounded-full overflow-hidden flex-shrink-0">
+        <img
+          width={50}
+          height={50}
+          className="object-cover "
+          src="https://source.unsplash.com/random"
+        />
+      </div>
+      <div className="flex flex-col flex-grow flex-shrink gap-4">
         <div className="flex gap-1 ">
           <p className="text-md font-semibold">Yadhukrishna CU</p>
           <p className="text-md font-normal text-slate-500">@yadhukrishna_cu</p>

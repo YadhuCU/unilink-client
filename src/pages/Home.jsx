@@ -55,11 +55,15 @@ export function Home() {
         <Navbar insideHome />
       </div>
       <div className="add-post p-4 pb-0 flex items-start gap-2 border-b-2 border-slate-900">
-        <img
-          className="w-[50px] h-[50px] object-cover rounded-full"
-          src="https://source.unsplash.com/random"
-        />
-        <div className="flex flex-col w-full ">
+        <div className="w-[50px] h-[50px] rounded-full overflow-hidden flex-shrink-0">
+          <img
+            width={50}
+            height={50}
+            className="object-cover "
+            src="https://source.unsplash.com/random"
+          />
+        </div>
+        <div className="flex flex-col flex-grow ">
           <textarea
             ref={textRef}
             className="w-full text-lg font-semibold bg-transparent outline-none resize-none px-2 py-2 mt-px mb-2"
