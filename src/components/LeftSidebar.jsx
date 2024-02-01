@@ -77,8 +77,8 @@ export function LeftSidebar() {
             <p className="text-sm font-semibold leading-5 ">Yadhudkrishna</p>
             <p className="text-sm text-slate-500 leading-5">@yadhu</p>
           </div>
-          <div className="p-3 ml-auto rounded-full hover:bg-slate-900 transition cursor-pointer">
-            <BsThreeDots className="text-2xl " />
+          <div className="p-2 ml-auto rounded-full hover:bg-slate-900 transition cursor-pointer">
+            <BsThreeDots />
           </div>
         </div>
       </div>

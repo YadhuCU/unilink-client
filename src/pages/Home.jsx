@@ -4,6 +4,7 @@ import { LuImagePlus } from "react-icons/lu";
 import { Button } from "../components/utils/Button";
 import { useRef, useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
+import { Post } from "../components/Post";
 
 Home.propTypes = {};
 
@@ -72,7 +73,7 @@ export function Home() {
             <div className="py-2 relative">
               <div
                 onClick={() => setPost({ ...post, postImage: "" })}
-                className="absolute left-0 p-3 rounded-full cursor-pointer hover:bg-slate-800 transition"
+                className="absolute left-0 p-3 rounded-full cursor-pointer bg-slate-900 hover:bg-slate-800 transition"
               >
                 <FaTrash className="text-lg" />
               </div>
@@ -107,6 +108,7 @@ export function Home() {
           </div>
         </div>
       </div>
+      <Post post={{ ...post, postImage: imagePreview }} />
     </div>
   );
 }

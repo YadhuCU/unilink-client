@@ -50,10 +50,10 @@ export function Navbar({ insideHome }) {
           ref={activeDivRef}
           className="w-full h-[50px] flex items-center border-b border-slate-900"
         >
-          <ul className="h-full w-full flex justify-center items-center font-semibold text-slate-300 transition hover:bg-slate-900 cursor-pointer">
+          <ul className="h-full w-full flex justify-center items-center font-semibold text-slate-300 transition  hover:bg-slate-900  cursor-pointer">
             <li className="h-full relative flex items-center">For you</li>
           </ul>
-          <ul className="h-full w-full flex justify-center items-center font-semibold text-slate-300 transition hover:bg-slate-900 cursor-pointer">
+          <ul className="h-full w-full flex justify-center items-center font-semibold text-slate-300 transition hover:bg-slate-900  cursor-pointer">
             <li className="h-full relative flex items-center">Following</li>
           </ul>
         </div>
