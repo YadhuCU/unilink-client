@@ -4,6 +4,25 @@
 
 :root {
   --container-padding: 0.75rem;
+  --fw-400: 400;
+  --fw-600: 600;
+
+  --clr-white: #f2f2f2;
+  --clr-blue-dark: #021024;
+  --clr-blue-dark-50: #052552;
+  --clr-blue-medium: #005ef3;
+  --clr-blue-medium-50: #00378c;
+  --clr-blue-light: #c1e8ff;
+  --clr-gray: #7da0ca;
+  --fs-xs: 0.5rem;
+  --fs-sm: 0.75rem;
+  --fs-md: 1rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.5rem;
+  --fs-xll: 1.75rem;
+
+  --br: 10px;
+  --bw: 2px;
 }
 
 ::selection {
@@ -31,4 +50,21 @@
 }
 .home::-webkit-scrollbar {
   display: none;
+}
+.or p {
+  background: var(--clr-blue-dark);
+  box-shadow: 0px 0px 20px 5px var(--clr-blue-dark);
+  z-index: 2;
+}
+
+.or::after {
+  content: "";
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--clr-gray);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
 }

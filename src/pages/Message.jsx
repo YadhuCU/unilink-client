@@ -7,7 +7,7 @@ export function Message() {
   return (
     <>
       <LeftSidebar />
-      <div>Message</div>
+      <div className="border">Message</div>
     </>
   );
 }

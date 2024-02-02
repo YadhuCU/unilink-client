@@ -12,8 +12,9 @@ function App() {
     <div className="w-full overflow-hidden h-[100dvh] bg-slate-950 text-slate-300 ">
       <div className="relative h-[100dvh] mx-auto overflow-hidden w-[min(1400px,_calc(100%_-_var(--container-padding,_1rem)))] grid md:grid-cols-[minmax(100px,300px),_minmax(300px,100%)] lg:grid-cols-[minmax(100px,300px),_minmax(300px,100%),_400px]">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/auth" element={<Auth />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/" element={<Auth />} />
+          <Route path="/signup" element={<Auth signup />} />
           <Route path="/bookmark" element={<Bookmark />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/notification" element={<Notification />} />
