@@ -18,8 +18,10 @@ export function Post({ post }) {
       />
       <div className="flex flex-col flex-grow flex-shrink gap-4">
         <div className="flex gap-1 ">
-          <p className="text-md font-semibold">Yadhukrishna CU</p>
-          <p className="text-md font-normal text-slate-500">@yadhukrishna_cu</p>
+          <p className="text-sm md:text-md font-semibold">Yadhukrishna CU</p>
+          <p className="text-sm md:text-md font-normal text-slate-500">
+            @yadhukrishna_cu
+          </p>
           <div className="p-2 ml-auto rounded-full hover:bg-slate-900 transition cursor-pointer">
             <BsThreeDots />
           </div>

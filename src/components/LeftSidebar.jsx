@@ -6,7 +6,7 @@ import { AiFillMessage } from "react-icons/ai";
 import { FaUser } from "react-icons/fa";
 import { Button } from "./utils/Button";
 import { BsThreeDots } from "react-icons/bs";
-
+import { Link } from "react-router-dom";
 import { useRef, useEffect } from "react";
 
 LeftSidebar.propTypes = {};
@@ -50,26 +50,36 @@ export function LeftSidebar() {
         ref={ulRef}
         className="flex md:flex-col md:gap-5 justify-around items-start"
       >
-        <li className="flex gap-4 items-center px-5 py-3 rounded-full hover:bg-slate-900 transition cursor-pointer">
-          <FaHome className="text-3xl" />
-          <div className="text-2xl hidden md:block">Home</div>
-        </li>
-        <li className="flex gap-4 items-center px-5 py-3 rounded-full hover:bg-slate-900 transition cursor-pointer">
-          <IoMdNotifications className="text-3xl" />
-          <div className="text-2xl hidden md:block">Notification</div>
-        </li>
-        <li className="flex gap-4 items-center px-5 py-3 rounded-full hover:bg-slate-900 transition cursor-pointer">
-          <HiBookmark className="text-3xl" />
-          <div className="text-2xl hidden md:block">Bookmark</div>
-        </li>
-        <li className="flex gap-4 items-center px-5 py-3 rounded-full hover:bg-slate-900 transition cursor-pointer">
-          <AiFillMessage className="text-3xl" />
-          <div className="text-2xl hidden md:block">Message</div>
-        </li>
-        <li className="flex gap-4 items-center px-5 py-3 rounded-full hover:bg-slate-900 transition cursor-pointer">
-          <FaUser className="text-3xl" />
-          <div className="text-2xl hidden md:block">Profile</div>
-        </li>
+        <Link to="/home">
+          <li className="flex gap-4 items-center px-5 py-3 rounded-full hover:bg-slate-900 transition cursor-pointer">
+            <FaHome className="text-3xl" />
+            <div className="text-2xl hidden md:block">Home</div>
+          </li>
+        </Link>
+        <Link to="/notification">
+          <li className="flex gap-4 items-center px-5 py-3 rounded-full hover:bg-slate-900 transition cursor-pointer">
+            <IoMdNotifications className="text-3xl" />
+            <div className="text-2xl hidden md:block">Notification</div>
+          </li>
+        </Link>
+        <Link to="/bookmark">
+          <li className="flex gap-4 items-center px-5 py-3 rounded-full hover:bg-slate-900 transition cursor-pointer">
+            <HiBookmark className="text-3xl" />
+            <div className="text-2xl hidden md:block">Bookmark</div>
+          </li>
+        </Link>
+        <Link to="/message">
+          <li className="flex gap-4 items-center px-5 py-3 rounded-full hover:bg-slate-900 transition cursor-pointer">
+            <AiFillMessage className="text-3xl" />
+            <div className="text-2xl hidden md:block">Message</div>
+          </li>
+        </Link>
+        <Link to="/profile">
+          <li className="flex gap-4 items-center px-5 py-3 rounded-full hover:bg-slate-900 transition cursor-pointer">
+            <FaUser className="text-3xl" />
+            <div className="text-2xl hidden md:block">Profile</div>
+          </li>
+        </Link>
       </ul>
       <div className="hidden md:flex flex-col gap-5 mt-auto px-5">
         <Button classes="py-3">Create Post</Button>
