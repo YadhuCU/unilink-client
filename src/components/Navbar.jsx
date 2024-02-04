@@ -1,6 +1,8 @@
 import PropTypes from "prop-types";
 import { useRef, useEffect } from "react";
 import { BsThreeDots } from "react-icons/bs";
+import { RiMailAddLine } from "react-icons/ri";
+import { IoArrowBack } from "react-icons/io5";
 
 Navbar.propTypes = {
   insideHome: PropTypes.bool,
@@ -8,6 +10,8 @@ Navbar.propTypes = {
   insideNotification: PropTypes.bool,
   insideProfile: PropTypes.bool,
   insideProfileDetail: PropTypes.bool,
+  insideMessage: PropTypes.bool,
+  insideChat: PropTypes.bool,
 };
 
 export function Navbar({
@@ -16,6 +20,8 @@ export function Navbar({
   insideNotification,
   insideProfile,
   insideProfileDetail,
+  insideMessage,
+  insideChat,
 }) {
   return (
     <>
@@ -24,6 +30,8 @@ export function Navbar({
       {insideNotification && <NotificationNavbar />}
       {insideProfile && <ProfileNavbar />}
       {insideProfileDetail && <ProfileDetailNavbar />}
+      {insideMessage && <MessageNavbar />}
+      {insideChat && <ChatNavbar />}
     </>
   );
 }
@@ -170,6 +178,39 @@ function ProfileDetailNavbar() {
       <ul className="h-full w-full flex justify-center items-center font-semibold text-slate-300 transition hover:bg-slate-900  cursor-pointer">
         <li className="h-full relative flex items-center">Likes</li>
       </ul>
+    </div>
+  );
+}
+
+function MessageNavbar() {
+  return (
+    <div className="w-full px-5 py-2 flex items-start ">
+      <div className="flex flex-col">
+        <h3 className="text-xl font-bold text-slate-100">Message</h3>
+      </div>
+      <div className="p-2 ml-auto rounded-full hover:bg-slate-900 transition cursor-pointer">
+        <RiMailAddLine />
+      </div>
+    </div>
+  );
+}
+
+function ChatNavbar() {
+  return (
+    <div className="w-full p-2 flex items-center">
+      <div className="flex gap-2 items-center">
+        <div className="p-2 lg:hidden ml-auto rounded-full hover:bg-slate-900 transition cursor-pointer">
+          <IoArrowBack />
+        </div>
+        <img
+          className="w-[50px] h-[50px] object-cover rounded-full"
+          src="https://source.unsplash.com/random"
+        />
+        <h3 className="text-xl font-bold text-slate-100">Yadhukrishna CU</h3>
+      </div>
+      <div className="p-2 ml-auto rounded-full hover:bg-slate-900 transition cursor-pointer">
+        <BsThreeDots />
+      </div>
     </div>
   );
 }

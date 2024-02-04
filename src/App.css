@@ -7,13 +7,14 @@
   --fw-400: 400;
   --fw-600: 600;
 
-  --clr-white: #f2f2f2;
+  --clr-white: #f1f5f9;
   --clr-blue-dark: #021024;
   --clr-blue-dark-50: #052552;
   --clr-blue-medium: #005ef3;
   --clr-blue-medium-50: #00378c;
   --clr-blue-light: #c1e8ff;
   --clr-gray: #7da0ca;
+  --clr-slate-900: #0f172a;
   --fs-xs: 0.5rem;
   --fs-sm: 0.75rem;
   --fs-md: 1rem;
@@ -31,7 +32,7 @@
 }
 
 .active {
-  color: #f1f5f9;
+  color: var(--clr-white);
 }
 .active::after {
   content: "";
@@ -67,4 +68,22 @@
   top: 50%;
   transform: translateY(-50%);
   z-index: 1;
+}
+
+.chat-people:hover .settings {
+  opacity: 1;
+}
+.chat-active {
+  background-color: var(--clr-slate-900);
+  position: relative;
+}
+.chat-active::after {
+  content: "";
+  position: absolute;
+  width: 3px;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  background-color: var(--clr-white);
+  border-radius: 100vw;
 }

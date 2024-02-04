@@ -42,10 +42,12 @@ export function LeftSidebar() {
   }, []);
 
   return (
-    <div className="absolute bottom-0 w-full bg-slate-950 md:static flex flex-col gap-10 px-4 md:p-4 pl-0">
-      <h1 className="hidden md:block text-5xl font-bold px-5 cursor-pointer">
-        UL
-      </h1>
+    <div className="absolute z-10 bottom-0 w-full bg-slate-950 md:static flex flex-col gap-10 px-4 md:p-4 pl-0">
+      <Link to="/home">
+        <h1 className="hidden md:block text-5xl font-bold px-5 cursor-pointer">
+          UL
+        </h1>
+      </Link>
       <ul
         ref={ulRef}
         className="flex md:flex-col md:gap-5 justify-around items-start"
