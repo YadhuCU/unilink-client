@@ -1,6 +1,6 @@
 # UniLink - Social Media Platform
 
-UniLink is a full-stack social media platform built with React, Node.js, MongoDB, and Socket.IO. It provides a Twitter-like experience for users to share thoughts, updates, engage in real-time chat, and receive notifications in a seamless and user-friendly environment.
+UniLink is a full-stack social media platform built with React, Node.js, MongoDB, Express and Socket.IO. It provides a Twitter-like experience for users to share thoughts, updates, engage in real-time chat, and receive notifications in a seamless and user-friendly environment.
 
 ## Table of Contents
 
@@ -31,3 +31,4 @@ UniLink is a full-stack social media platform built with React, Node.js, MongoDB
   - Node.js
   - MongoDB
   - Socket.IO
+  - Express
