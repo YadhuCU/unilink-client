@@ -79,7 +79,10 @@ export function Auth({ signup }) {
   };
 
   const loginUsingGoogle = useGoogleLogin({
-    onSuccess: (res) => setUser(res),
+    onSuccess: (res) => {
+      setUser(res);
+      navigate("/home");
+    },
     onError: (error) => console.log("Error", error),
   });
 
@@ -93,8 +96,12 @@ export function Auth({ signup }) {
   console.log("useData", userData);
 
   return (
-    <div className="col-span-3">
+    <div className="col-span-3 place-content-center grid">
       <div className="md:min-w-[500px] md:max-w-[500px] mx-auto p-5 flex flex-col gap-5">
+        <h1 className="text-6xl font-bold text-center tracking-widest text-slate-500">
+          Welcome to{" "}
+          <span className="text-slate-50 font-black text-7xl">UniLink</span>
+        </h1>
         <p className="animation text-center text-3xl font-[var(--fw-600)] tracking-widest">
           {signup ? "Sign Up" : "Sing In"}
         </p>

@@ -6,6 +6,7 @@ import { Bookmark } from "./pages/Bookmark";
 import { Message } from "./pages/Message";
 import { Profile } from "./pages/Profile";
 import { Notification } from "./pages/Notification";
+import { PostDetails } from "./components/PostDetails";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/notification" element={<Notification />} />
           <Route path="/message" element={<Message />} />
+          <Route path="/post" element={<PostDetails />} />
           <Route path="/*" element={<Home />} />
         </Routes>
       </div>

@@ -8,6 +8,16 @@ import { BsThreeDots } from "react-icons/bs";
 import { useRef } from "react";
 import { Button } from "../components/utils/Button";
 import { Chat } from "../components/Chat";
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+} from "@chakra-ui/react";
 
 Message.propTypes = {};
 ChatPeople.propTypes = {
@@ -18,6 +28,7 @@ export function Message() {
   const [search, setSearch] = useState("");
   const parentOfChatPeople = useRef(null);
   const [showChat, setShowChat] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handlActive = (e) => {
     const childNodes = parentOfChatPeople.current.childNodes;
@@ -37,7 +48,7 @@ export function Message() {
           } border-x-2 border-slate-900`}
         >
           <div className="sticky top-0 z-50 backdrop-blur-md">
-            <Navbar insideMessage />
+            <Navbar insideMessage buttonClick={onOpen} />
           </div>
           <div className="h-[50px] flex gap-2 items-center p-2 realative">
             <IoArrowBack
@@ -59,7 +70,7 @@ export function Message() {
           </div>
 
           <div ref={parentOfChatPeople} className="w-full py-4 ">
-            {new Array(24).fill(4).map((_, id) => (
+            {new Array(4).fill(4).map((_, id) => (
               <ChatPeople onClick={handlActive} key={id} />
             ))}
           </div>
@@ -80,12 +91,39 @@ export function Message() {
                   Choose from your existing conversations, start a new one, or
                   just keep swimming
                 </p>
-                <Button>New Message</Button>
+                <Button buttonClick={onOpen}>New Message</Button>
               </div>
             </div>
           </div>
         )}
       </div>
+
+      <Modal isOpen={isOpen} size={"xl"} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Edit Profile</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <label className="flex w-full px-4 border-3 border-slate-500 py-2 gap-2 rounded-full items-center transition-all">
+              <CiSearch className="text-md" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                type="text"
+                placeholder="Search Chat"
+                className="bg-transparent border-0 outline-none w-full"
+              />
+            </label>
+            <ChatPeople onClick={handlActive} />
+          </ModalBody>
+
+          <ModalFooter>
+            <Button buttonClick={onClose} classes={"mr-4 bg-slate-400"}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   );
 }

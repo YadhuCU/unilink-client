@@ -7,11 +7,10 @@ import { FaTrash } from "react-icons/fa";
 import { Post } from "../components/Post";
 import { LeftSidebar } from "../components/LeftSidebar";
 import { RightSidebar } from "../components/RightSidebar";
-import { dummyPost } from "../service/dummy";
 
-Home.propTypes = {};
+PostDetails.propTypes = {};
 
-export function Home() {
+export function PostDetails() {
   const textRef = useRef(null);
   const [post, setPost] = useState({
     postText: "",
@@ -54,11 +53,12 @@ export function Home() {
 
   return (
     <>
-      <LeftSidebar insideHome />
+      <LeftSidebar />
       <div className="home border-x border-slate-900 overflow-y-scroll">
         <div className="sticky top-0 z-50 backdrop-blur-md">
-          <Navbar insideHome />
+          <Navbar insidePost />
         </div>
+        <Post />
         <div className="add-post p-4 pb-0 flex items-start gap-2 border-b-2 border-slate-900">
           <img
             className="object-cover w-[50px] h-[50px] rounded-full"
@@ -72,7 +72,7 @@ export function Home() {
               value={post.postText}
               onChange={(e) => handleKeyUp(e)}
               autoCorrect="false"
-              placeholder="Post your thoughts..."
+              placeholder="Post your Replay..."
             ></textarea>
             {imagePreview && (
               <div className="py-2 relative">
@@ -115,10 +115,7 @@ export function Home() {
             </div>
           </div>
         </div>
-        <Post post={{ ...post, postImage: imagePreview }} />
-        {dummyPost.map((item, index) => (
-          <Post post={item} key={index} />
-        ))}
+        <Post post={{ ...post, postImage: imagePreview }} comment />
       </div>
       <RightSidebar />
     </>

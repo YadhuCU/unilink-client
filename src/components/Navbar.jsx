@@ -12,8 +12,12 @@ Navbar.propTypes = {
   insideProfileDetail: PropTypes.bool,
   insideMessage: PropTypes.bool,
   insideChat: PropTypes.bool,
+  insidePost: PropTypes.bool,
+  buttonClick: PropTypes.func,
 };
-
+MessageNavbar.propTypes = {
+  buttonClick: PropTypes.func,
+};
 export function Navbar({
   insideHome,
   insideBookmark,
@@ -22,6 +26,8 @@ export function Navbar({
   insideProfileDetail,
   insideMessage,
   insideChat,
+  insidePost,
+  buttonClick,
 }) {
   return (
     <>
@@ -30,8 +36,9 @@ export function Navbar({
       {insideNotification && <NotificationNavbar />}
       {insideProfile && <ProfileNavbar />}
       {insideProfileDetail && <ProfileDetailNavbar />}
-      {insideMessage && <MessageNavbar />}
+      {insideMessage && <MessageNavbar buttonClick={buttonClick} />}
       {insideChat && <ChatNavbar />}
+      {insidePost && <PostNavbar />}
     </>
   );
 }
@@ -182,13 +189,16 @@ function ProfileDetailNavbar() {
   );
 }
 
-function MessageNavbar() {
+function MessageNavbar({ buttonClick }) {
   return (
     <div className="w-full px-5 py-2 flex items-start ">
       <div className="flex flex-col">
         <h3 className="text-xl font-bold text-slate-100">Message</h3>
       </div>
-      <div className="p-2 ml-auto rounded-full hover:bg-slate-900 transition cursor-pointer">
+      <div
+        onClick={buttonClick}
+        className="p-2 ml-auto rounded-full hover:bg-slate-900 transition cursor-pointer"
+      >
         <RiMailAddLine />
       </div>
     </div>
@@ -210,6 +220,19 @@ function ChatNavbar() {
       </div>
       <div className="p-2 ml-auto rounded-full hover:bg-slate-900 transition cursor-pointer">
         <BsThreeDots />
+      </div>
+    </div>
+  );
+}
+
+function PostNavbar() {
+  return (
+    <div className="w-full px-5 py-2 flex items-start ">
+      <div className="flex flex-col">
+        <h3 className="text-xl font-bold text-slate-100">Post</h3>
+      </div>
+      <div className="p-2 ml-auto rounded-full hover:bg-slate-900 transition cursor-pointer">
+        <RiMailAddLine />
       </div>
     </div>
   );

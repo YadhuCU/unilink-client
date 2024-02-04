@@ -3,6 +3,7 @@ import { LeftSidebar } from "../components/LeftSidebar";
 import { RightSidebar } from "../components/RightSidebar";
 import { Navbar } from "../components/Navbar";
 import { Post } from "../components/Post";
+import { dummyPost } from "../service/dummy";
 
 Bookmark.propTypes = {};
 
@@ -14,16 +15,9 @@ export function Bookmark() {
         <div className="sticky top-0 z-50 backdrop-blur-md">
           <Navbar insideBookmark />
         </div>
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
-        <Post />
+        {dummyPost.reverse().map((item, index) => (
+          <Post post={item} key={index} />
+        ))}
         <Post />
       </div>
       <RightSidebar />
