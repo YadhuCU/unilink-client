@@ -1,8 +1,33 @@
-# React + Vite
+# UniLink - Social Media Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+UniLink is a full-stack social media platform built with React, Node.js, MongoDB, and Socket.IO. It provides a Twitter-like experience for users to share thoughts, updates, engage in real-time chat, and receive notifications in a seamless and user-friendly environment.
 
-Currently, two official plugins are available:
+## Table of Contents
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- [Features](#features)
+- [Technologies](#technologies)
+
+## Features
+
+- **User authentication** powered by Google OAuth
+- **Responsive** UI design using Chakra UI
+- Seamless navigation with React Router
+- Integration with MongoDB for data storage
+- API calls handled through Axios
+- **Real-time chat and notifications** with Socket.IO
+- Users can share their memorable moments.
+
+## Technologies
+
+- Frontend:
+  - React
+  - Chakra UI
+  - Tailwind CSS
+  - React Router
+  - Axios
+  - Socket.IO client
+  - Redux
+- Backend:
+  - Node.js
+  - MongoDB
+  - Socket.IO
