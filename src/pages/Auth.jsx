@@ -8,6 +8,8 @@ import { BsFillEyeSlashFill } from "react-icons/bs";
 import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { loginAPI } from "../service/allAPI";
+import { useToast } from "@chakra-ui/react";
 
 Auth.propTypes = {
   signup: PropTypes.bool,
@@ -15,9 +17,8 @@ Auth.propTypes = {
 
 export function Auth({ signup }) {
   const [userData, setUserData] = useState({
-    firstName: "",
-    lastName: "",
-    userName: "",
+    name: "",
+    username: "",
     email: "",
     password: "",
   });
@@ -28,6 +29,7 @@ export function Auth({ signup }) {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState({});
   const navigate = useNavigate();
+  const toast = useToast();
 
   // auto focusing input box
   useEffect(() => {
@@ -68,9 +70,34 @@ export function Auth({ signup }) {
     setShow((prev) => !prev);
   };
 
-  const handleLogin = () => {
-    console.log("userData", userData);
-    navigate("/home");
+  // login
+  const handleLogin = async () => {
+    const { username, password } = userData;
+
+    if (!username && !password) return;
+
+    const result = await loginAPI(userData);
+    if (result.status === 201) {
+      setTimeout(() => navigate("/home"), 2000);
+      toast({
+        title: "Account created.",
+        description: "We've created your account for you.",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+        position: "top",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: result.response.data,
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
+      console.log(result.response.data);
+    }
   };
 
   const handlSignup = () => {
@@ -80,8 +107,8 @@ export function Auth({ signup }) {
 
   const loginUsingGoogle = useGoogleLogin({
     onSuccess: (res) => {
+      console.log("loginUsingGoogle", res);
       setUser(res);
-      navigate("/home");
     },
     onError: (error) => console.log("Error", error),
   });
@@ -90,10 +117,6 @@ export function Auth({ signup }) {
     googleLogout();
     setProfile({});
   };
-
-  console.log("user", user);
-  console.log("profile", profile);
-  console.log("useData", userData);
 
   return (
     <div className="col-span-3 place-content-center grid">
@@ -110,7 +133,7 @@ export function Auth({ signup }) {
           <div className="animation w-full">
             <div
               className={`w-full px-5 flex items-center   rounded-[var(--br)] ${
-                userData.firstName
+                userData.name
                   ? "border-[2pt] border-[var(--clr-blue-medium)]"
                   : "border-[2pt] border-slate-500"
               }`}
@@ -118,10 +141,10 @@ export function Auth({ signup }) {
               <FaUser />
               <input
                 type="text"
-                placeholder="First Name"
-                value={userData.firstName}
+                placeholder="Name"
+                value={userData.name}
                 onChange={(e) =>
-                  setUserData({ ...userData, firstName: e.target.value })
+                  setUserData({ ...userData, name: e.target.value })
                 }
                 autoComplete="false"
                 onKeyDown={(e) =>
@@ -137,7 +160,7 @@ export function Auth({ signup }) {
           <div className="animation w-full">
             <div
               className={`w-full px-5 flex items-center   rounded-[var(--br)] ${
-                userData.lastName
+                userData.username
                   ? "border-[2pt] border-[var(--clr-blue-medium)]"
                   : "border-[2pt] border-slate-500"
               }`}
@@ -145,10 +168,10 @@ export function Auth({ signup }) {
               <FaUser />
               <input
                 type="text"
-                placeholder="Last Name"
-                value={userData.lastName}
+                placeholder="Username"
+                value={userData.username}
                 onChange={(e) =>
-                  setUserData({ ...userData, lastName: e.target.value })
+                  setUserData({ ...userData, username: e.target.value })
                 }
                 autoComplete="false"
                 onKeyDown={(e) =>
@@ -228,7 +251,7 @@ export function Auth({ signup }) {
           <button
             disabled={userData.email && userData.password ? false : true}
             className={`${
-              userData.email && userData.password && userData.firstName
+              userData.email && userData.password && userData.name
                 ? "cursor-pointer "
                 : "cursor-not-allowed bg-[var(--clr-blue-medium-50)] text-slate-500"
             } animation w-ful lpx-5 py-4 bg-[var(--clr-blue-medium)] rounded-[var(--br)] tracking-widest`}

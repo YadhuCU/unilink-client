@@ -219,7 +219,7 @@ export function Profile() {
                       <input
                         type="date"
                         className="bg-transparent outline-none"
-                        onChange={(e) => console.log(new Date(e.timeStamp))}
+                        onChange={(e) => console.log(new Date(e.target.value))}
                       />
                     </label>
                     <div className="flex gap-1 items-center  text-slate-500">
