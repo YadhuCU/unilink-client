@@ -8,7 +8,7 @@ import { BsFillEyeSlashFill } from "react-icons/bs";
 import { googleLogout, useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import { loginAPI } from "../service/allAPI";
+import { loginAPI, registerAPI } from "../service/allAPI";
 import { useToast } from "@chakra-ui/react";
 
 Auth.propTypes = {
@@ -21,72 +21,61 @@ export function Auth({ signup }) {
     username: "",
     email: "",
     password: "",
+    googlePicture: "",
   });
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
-  const [usernameError, setUsernameError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
   const [show, setShow] = useState(true);
-  const [user, setUser] = useState(null);
-  const [profile, setProfile] = useState({});
+  const [googleUser, setGoogleUser] = useState(null);
   const navigate = useNavigate();
   const toast = useToast();
 
-  // auto focusing input box
-  useEffect(() => {
-    if (emailRef.current) {
-      emailRef.current.focus();
-    }
-  }, []);
-
   // google oauth
   useEffect(() => {
-    if (user) {
+    if (googleUser) {
       axios
         .get(
-          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`,
+          `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleUser.access_token}`,
           {
             headers: {
-              Authorization: `Bearer ${user.access_token}`,
+              Authorization: `Bearer ${googleUser.access_token}`,
               Accept: "application/json",
             },
           },
         )
-        .then((res) => setProfile(res.data))
+        .then((res) => signupWithGoogle(res.data))
         .catch((error) => console.log("Error axios: -> ", error));
     }
-  }, [user]);
+  }, [googleUser]);
+
+  const showPassword = () => setShow((prev) => !prev);
 
   const handleEmailChange = (e) => {
     const { value } = e.target;
     if (value.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)) {
-      setUsernameError(false);
+      setEmailError(false);
     } else {
-      setUsernameError(true);
+      setEmailError(true);
     }
     setUserData({ ...userData, email: value });
   };
 
-  const showPassword = () => {
-    setShow((prev) => !prev);
-  };
-
   // login
-  const handleLogin = async () => {
-    const { username, password } = userData;
+  const handleLogin = async (google, googleUserData) => {
+    const data = {
+      email: google ? googleUserData.email : userData.email,
+      password: google ? googleUserData.password : userData.password,
+    };
 
-    if (!username && !password) return;
+    console.log("login data", data);
 
-    const result = await loginAPI(userData);
+    const result = await loginAPI(data);
+    console.log(result);
     if (result.status === 201) {
-      setTimeout(() => navigate("/home"), 2000);
-      toast({
-        title: "Account created.",
-        description: "We've created your account for you.",
-        status: "success",
-        duration: 2000,
-        isClosable: true,
-        position: "top",
-      });
+      sessionStorage.setItem("user", JSON.stringify(result.data.user, null, 4));
+      sessionStorage.setItem("token", result.data.token);
+      navigate("/home");
     } else {
       toast({
         title: "Error",
@@ -100,22 +89,73 @@ export function Auth({ signup }) {
     }
   };
 
-  const handlSignup = () => {
-    console.log("userData", userData);
-    navigate("/home");
+  // register
+  const handleSignup = async (google, googleUserData) => {
+    const data = google ? googleUserData : userData;
+
+    console.log("data", data);
+
+    const result = await registerAPI(data);
+
+    if (result.status === 201) {
+      handleLogin(google, googleUserData);
+    } else {
+      if (google) {
+        handleLogin(google, googleUserData);
+      } else {
+        toast({
+          title: "Error",
+          description: result.response.data,
+          status: "error",
+          duration: 2000,
+          isClosable: true,
+          position: "top",
+        });
+      }
+      console.log(result.response.data);
+    }
   };
 
-  const loginUsingGoogle = useGoogleLogin({
-    onSuccess: (res) => {
-      console.log("loginUsingGoogle", res);
-      setUser(res);
-    },
+  const authUsingGoogle = useGoogleLogin({
+    onSuccess: (res) => setGoogleUser(res),
     onError: (error) => console.log("Error", error),
   });
 
+  const signupWithGoogle = async (data) => {
+    const { email, name, picture, id } = data;
+    const username = email.split("@")[0];
+    const google = true;
+
+    setUserData({
+      email,
+      name,
+      password: id,
+      username,
+      googlePicture: picture,
+    });
+
+    const newUserData = {
+      email,
+      name,
+      password: id,
+      username,
+      googlePicture: picture,
+    };
+    handleSignup(google, newUserData);
+  };
+
   const logout = () => {
     googleLogout();
-    setProfile({});
+  };
+
+  const clearState = () => {
+    setUserData({
+      name: "",
+      username: "",
+      email: "",
+      password: "",
+    });
+    setEmailError(false);
   };
 
   return (
@@ -203,8 +243,8 @@ export function Auth({ signup }) {
               className="bg-transparent w-full px-5 py-4 outline-none font-[var(--fw-400)] tracking-widest placeholder:tracking-widest placeholder:text-[var(--clr-white)]"
             />
           </div>
-          {/* username error */}
-          {usernameError && (
+          {/* email error */}
+          {emailError && userData.email && (
             <p className="px-7 py-2 text-xs text-[var(--clr-blue-light)]">
               *Invalid email
             </p>
@@ -249,13 +289,23 @@ export function Auth({ signup }) {
         </div>
         {signup ? (
           <button
-            disabled={userData.email && userData.password ? false : true}
+            disabled={
+              userData.email &&
+              userData.password &&
+              userData.username &&
+              userData.name
+                ? false
+                : true
+            }
             className={`${
-              userData.email && userData.password && userData.name
+              userData.email &&
+              userData.password &&
+              userData.name &&
+              userData.username
                 ? "cursor-pointer "
                 : "cursor-not-allowed bg-[var(--clr-blue-medium-50)] text-slate-500"
             } animation w-ful lpx-5 py-4 bg-[var(--clr-blue-medium)] rounded-[var(--br)] tracking-widest`}
-            onClick={handlSignup}
+            onClick={handleSignup}
           >
             Sign Up
           </button>
@@ -276,21 +326,21 @@ export function Auth({ signup }) {
           <p>or</p>
         </div>
         <button
-          onClick={loginUsingGoogle}
+          onClick={authUsingGoogle}
           className="animation w-ful flex items-center justify-center gap-5 lpx-5 py-4 bg-[var(--clr-white)] text-[var(--clr-blue-dark)] rounded-[var(--br)] tracking-widest"
         >
           <FcGoogle className="text-[2rem]" />
           Sign In with Google
         </button>
         {signup ? (
-          <Link to="/">
+          <Link to="/" onClick={clearState}>
             <p>
               Already have an account?{" "}
               <span className="text-[var(--clr-blue-medium)]">Sign In.</span>
             </p>
           </Link>
         ) : (
-          <Link to="/signup">
+          <Link to="/signup" onClick={clearState}>
             <p>
               Don&apos;t have an account?{" "}
               <span className="text-[var(--clr-blue-medium)]">

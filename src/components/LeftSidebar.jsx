@@ -6,7 +6,7 @@ import { AiFillMessage } from "react-icons/ai";
 import { FaUser } from "react-icons/fa";
 import { Button } from "./utils/Button";
 import { BsThreeDots } from "react-icons/bs";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useRef, useEffect, useState } from "react";
 import {
   Modal,
@@ -32,6 +32,8 @@ export function LeftSidebar({ insideHome }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [fullWidth, setFullWidth] = useState(false);
   const currentLocation = useLocation();
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   const handleOpenPost = () => {
     onOpen();
@@ -45,13 +47,18 @@ export function LeftSidebar({ insideHome }) {
     }, 100);
   };
 
-  // handling the active state effect of the button when clicking
   useEffect(() => {
+    // handling the active state effect of the button when clicking
     const activeListName = currentLocation.pathname.split("/")[1];
     const sidebar = document.getElementById("left-side-bar");
     const currList = sidebar.querySelector(`.${activeListName}`);
     if (currList) {
       currList.classList.add("bg-slate-800");
+    }
+    // taking user details in session
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (user) {
+      setUser(user);
     }
   }, []);
 
@@ -93,6 +100,12 @@ export function LeftSidebar({ insideHome }) {
     const textarea = textRef.current;
     textarea.style.height = "auto";
     setPost({ postText: "", postImage: "" });
+  };
+
+  const handleLogout = () => {
+    navigate("/");
+    sessionStorage.setItem("user", "");
+    sessionStorage.setItem("token", "");
   };
   return (
     <>
@@ -158,8 +171,10 @@ export function LeftSidebar({ insideHome }) {
               src="https://source.unsplash.com/random"
             />
             <div className="flex flex-col">
-              <p className="text-sm font-semibold leading-5 ">Yadhudkrishna</p>
-              <p className="text-sm text-slate-500 leading-5">@yadhu</p>
+              <p className="text-sm font-semibold leading-5 ">{user?.name}</p>
+              <p className="text-sm text-slate-500 leading-5">
+                @{user?.username}
+              </p>
             </div>
             <Menu>
               <MenuButton
@@ -172,7 +187,7 @@ export function LeftSidebar({ insideHome }) {
                 <BsThreeDots />
               </MenuButton>
               <MenuList className="bg-slate-800 text-slate-300">
-                <MenuItem>Logout</MenuItem>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
                 <MenuItem>Profile</MenuItem>
               </MenuList>
             </Menu>
