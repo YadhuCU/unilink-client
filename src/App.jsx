@@ -20,7 +20,7 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/notification" element={<Notification />} />
           <Route path="/message" element={<Message />} />
-          <Route path="/post" element={<PostDetails />} />
+          <Route path="/post/:id" element={<PostDetails />} />
           <Route path="/*" element={<Home />} />
         </Routes>
       </div>

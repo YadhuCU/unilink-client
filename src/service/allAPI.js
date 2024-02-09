@@ -20,3 +20,18 @@ export const createPostAPI = async (reqHeader, reqBody) => {
     reqBody,
   );
 };
+
+// get all posts.
+export const getAllPostAPI = async (reqHeader) => {
+  return await commonAPI("GET", `${SERVER_URL}/posts/all`, reqHeader, "");
+};
+
+// get user.
+export const getUserAPI = async (id, reqHeader) => {
+  return await commonAPI("GET", `${SERVER_URL}/users/${id}`, reqHeader, "");
+};
+
+// get Post
+export const getPostAPI = async (id, reqHeader) => {
+  return await commonAPI("GET", `${SERVER_URL}/posts/${id}`, reqHeader, "");
+};

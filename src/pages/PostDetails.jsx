@@ -7,48 +7,75 @@ import { FaTrash } from "react-icons/fa";
 import { Post } from "../components/Post";
 import { LeftSidebar } from "../components/LeftSidebar";
 import { RightSidebar } from "../components/RightSidebar";
+import { useParams } from "react-router-dom";
+import { getPostAPI } from "../service/allAPI";
 
 PostDetails.propTypes = {};
 
 export function PostDetails() {
   const textRef = useRef(null);
-  const [post, setPost] = useState({
-    postText: "",
-    postImage: "",
+  const [comment, setComment] = useState({
+    commentText: "",
+    commentImage: "",
   });
   const [imagePreview, setImagePreview] = useState("");
+  const { id } = useParams();
+  const [post, setPost] = useState([]);
+
+  useEffect(() => {
+    getPost();
+  }, []);
 
   useEffect(() => {
     if (
-      post.postImage.type == "image/png" ||
-      post.postImage.type == "image/jpg" ||
-      post.postImage.type == "image/jpeg"
+      comment.commentImage.type == "image/png" ||
+      comment.commentImage.type == "image/jpg" ||
+      comment.commentImage.type == "image/jpeg"
     ) {
-      setImagePreview(URL.createObjectURL(post.postImage));
+      setImagePreview(URL.createObjectURL(comment.commentImage));
     } else {
-      setPost({ ...post, postImage: "" });
+      setComment({ ...comment, commentImage: "" });
       setImagePreview("");
     }
-  }, [post.postImage]);
+  }, [comment.commentImage]);
+
+  const getPost = async () => {
+    const token = sessionStorage.getItem("token");
+
+    if (token) {
+      const reqHeader = {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      };
+
+      const result = await getPostAPI(id, reqHeader);
+
+      if (result.status === 200) {
+        setPost(result.data);
+      } else {
+        console.log("error", result.response.data);
+      }
+    }
+  };
 
   const handleKeyUp = () => {
     const textarea = textRef.current;
     textarea.style.height = "auto";
     textarea.style.height = `${textarea.scrollHeight}px`;
-    setPost({ ...post, postText: textarea.value });
+    setComment({ ...comment, commentText: textarea.value });
   };
 
   const handleCreatPost = () => {
     console.log("Button is working");
-    if (post.postImage || post.postText) {
-      console.log(post);
+    if (comment.commentImage || comment.commentText) {
+      console.log(comment);
     }
   };
 
   const handleClear = () => {
     const textarea = textRef.current;
     textarea.style.height = "auto";
-    setPost({ postText: "", postImage: "" });
+    setComment({ commentText: "", commentImage: "" });
   };
 
   return (
@@ -58,7 +85,7 @@ export function PostDetails() {
         <div className="sticky top-0 z-50 backdrop-blur-md">
           <Navbar insidePost />
         </div>
-        <Post />
+        <Post post={post} />
         <div className="add-post p-4 pb-0 flex items-start gap-2 border-b-2 border-slate-900">
           <img
             className="object-cover w-[50px] h-[50px] rounded-full"
@@ -69,7 +96,7 @@ export function PostDetails() {
               ref={textRef}
               className="w-full text-lg font-semibold bg-transparent outline-none resize-none px-2 py-2 mt-px mb-2"
               rows="1"
-              value={post.postText}
+              value={comment.commentText}
               onChange={(e) => handleKeyUp(e)}
               autoCorrect="false"
               placeholder="Post your Replay..."
@@ -77,7 +104,7 @@ export function PostDetails() {
             {imagePreview && (
               <div className="py-2 relative">
                 <div
-                  onClick={() => setPost({ ...post, postImage: "" })}
+                  onClick={() => setComment({ ...comment, commentImage: "" })}
                   className="absolute left-0 p-3 rounded-full cursor-pointer bg-slate-900 hover:bg-slate-800 transition"
                 >
                   <FaTrash className="text-lg" />
@@ -91,12 +118,12 @@ export function PostDetails() {
                   type="file"
                   className="hidden"
                   onChange={(e) =>
-                    setPost({ ...post, postImage: e.target.files[0] })
+                    setComment({ ...comment, commentImage: e.target.files[0] })
                   }
                 />
                 <LuImagePlus className="text-xl" />
               </label>
-              {(post.postText || post.postImage) && (
+              {(comment.commentText || comment.commentImage) && (
                 <div
                   onClick={handleClear}
                   className=" p-3 rounded-full cursor-pointer hover:bg-slate-800 transition ml-auto"
@@ -107,7 +134,7 @@ export function PostDetails() {
               <Button
                 buttonClick={handleCreatPost}
                 classes={`${
-                  post.postText || post.postImage || "ml-auto"
+                  comment.commentText || comment.commentImage || "ml-auto"
                 } py-px`}
               >
                 Post
@@ -115,7 +142,7 @@ export function PostDetails() {
             </div>
           </div>
         </div>
-        <Post post={{ ...post, postImage: imagePreview }} comment />
+        {/* <Post post={{ ...comment, postImage: imagePreview }} comment /> */}
       </div>
       <RightSidebar />
     </>

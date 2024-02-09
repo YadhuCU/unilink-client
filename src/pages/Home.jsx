@@ -10,7 +10,7 @@ import { RightSidebar } from "../components/RightSidebar";
 import { dummyPost } from "../service/dummy";
 import { Avatar } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { createPostAPI } from "../service/allAPI.js";
+import { createPostAPI, getAllPostAPI } from "../service/allAPI.js";
 import { useToast } from "@chakra-ui/react";
 
 Home.propTypes = {};
@@ -25,6 +25,7 @@ export function Home() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const toast = useToast();
+  const [allPosts, setAllPosts] = useState([]);
 
   useEffect(() => {
     const user = sessionStorage.getItem("user");
@@ -33,6 +34,8 @@ export function Home() {
     setUser(JSON.parse(user));
 
     if (!token) navigate("/");
+
+    getAllPosts();
   }, []);
 
   useEffect(() => {
@@ -47,6 +50,23 @@ export function Home() {
       setImagePreview("");
     }
   }, [post.postImage]);
+
+  const getAllPosts = async () => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      const reqHeader = {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      };
+
+      const result = await getAllPostAPI(reqHeader);
+      if (result.status === 200) {
+        setAllPosts(result.data);
+      } else {
+        console.log("error", result.response.data);
+      }
+    }
+  };
 
   const handleKeyUp = () => {
     const textarea = textRef.current;
@@ -64,7 +84,6 @@ export function Home() {
           Authorization: `Bearer ${token}`,
         };
         const result = await createPostAPI(reqHeader, post);
-        console.log("result", result);
         if (result.status === 201) {
           toast({
             title: "Success",
@@ -94,8 +113,6 @@ export function Home() {
     textarea.style.height = "auto";
     setPost({ postText: "", postImage: "" });
   };
-
-  console.log("user", user);
 
   return (
     <>
@@ -157,9 +174,8 @@ export function Home() {
             </div>
           </div>
         </div>
-        {dummyPost.map((item, index) => (
-          <Post post={item} key={index} />
-        ))}
+        {allPosts?.length > 0 &&
+          allPosts.map((item, index) => <Post post={item} key={index} />)}
       </div>
       <RightSidebar />
     </>

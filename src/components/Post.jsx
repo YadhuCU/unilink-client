@@ -4,33 +4,61 @@ import { MdBookmark } from "react-icons/md";
 import { IoHeart } from "react-icons/io5";
 import { BiSolidComment } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
-import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import { Menu, MenuButton, MenuList, MenuItem, Avatar } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { getUserAPI } from "../service/allAPI";
+import { SERVER_URL } from "../service/serverURL";
 
 Post.propTypes = {
-  post: PropTypes.object,
+  post: PropTypes.any,
   comment: PropTypes.bool,
 };
 
 export function Post({ post, comment }) {
   const naviage = useNavigate();
+  const [user, setUser] = useState([]);
+
+  useEffect(() => {
+    getUser();
+  }, [post]);
+
+  console.log("postuser", post?.postUser);
+  console.log("post", post);
+  const getUser = async () => {
+    if (post?.postUser) {
+      const token = sessionStorage.getItem("token");
+
+      if (token) {
+        const reqHeader = {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        };
+
+        const result = await getUserAPI(post.postUser, reqHeader);
+
+        if (result.status === 200) {
+          setUser(result.data);
+        } else {
+          console.log("error", result.response.data);
+        }
+      }
+    }
+  };
 
   const handleNavigate = () => {
     if (!comment) {
-      naviage("/post");
+      naviage(`/post/${post?._id}`);
     }
   };
 
   return (
     <div className="flex gap-4 items-start p-4 border-b-2 border-slate-900">
-      <img
-        className="object-cover w-[50px] h-[50px] rounded-full"
-        src="https://source.unsplash.com/random"
-      />
+      <Avatar name={user?.name} src={user?.googlePicture} />
       <div className="flex flex-col flex-grow flex-shrink gap-4">
         <div className="flex gap-1 ">
-          <p className="text-sm md:text-md font-semibold">Yadhukrishna CU</p>
+          <p className="text-sm md:text-md font-semibold">{user?.name}</p>
           <p className="text-sm md:text-md font-normal text-slate-500">
-            @yadhukrishna_cu
+            @{user?.username}
           </p>
           <div className=" ml-auto">
             <Menu>
@@ -59,10 +87,12 @@ export function Post({ post, comment }) {
               __html: post?.postText ? post?.postText : "",
             }}
           />
-          <img
-            className="rounded-lg border-2 border-slate-900"
-            src={post?.postImage ? post.postImage : ""}
-          />
+          {post?.postImage && (
+            <img
+              className="rounded-lg border-2 border-slate-900"
+              src={`${SERVER_URL}/post-image/${post?.postImage}`}
+            />
+          )}
         </div>
 
         <div className="flex justify-between py-2  text-slate-500">
