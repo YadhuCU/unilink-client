@@ -4,10 +4,20 @@ import { RightSidebar } from "../components/RightSidebar";
 import { Navbar } from "../components/Navbar";
 import { Post } from "../components/Post";
 import { dummyPost } from "../service/dummy";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 Bookmark.propTypes = {};
 
 export function Bookmark() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) navigate("/");
+  }, []);
+
   return (
     <>
       <LeftSidebar />

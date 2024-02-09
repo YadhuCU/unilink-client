@@ -6,7 +6,7 @@ import { Bookmark } from "./pages/Bookmark";
 import { Message } from "./pages/Message";
 import { Profile } from "./pages/Profile";
 import { Notification } from "./pages/Notification";
-import { PostDetails } from "./components/PostDetails";
+import { PostDetails } from "./pages/PostDetails";
 
 function App() {
   return (

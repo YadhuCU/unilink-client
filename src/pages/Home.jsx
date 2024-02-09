@@ -8,6 +8,8 @@ import { Post } from "../components/Post";
 import { LeftSidebar } from "../components/LeftSidebar";
 import { RightSidebar } from "../components/RightSidebar";
 import { dummyPost } from "../service/dummy";
+import { Avatar } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 Home.propTypes = {};
 
@@ -18,6 +20,17 @@ export function Home() {
     postImage: "",
   });
   const [imagePreview, setImagePreview] = useState("");
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const user = sessionStorage.getItem("user");
+    const token = sessionStorage.getItem("token");
+
+    setUser(JSON.parse(user));
+
+    if (!token) navigate("/");
+  }, []);
 
   useEffect(() => {
     if (
@@ -52,6 +65,8 @@ export function Home() {
     setPost({ postText: "", postImage: "" });
   };
 
+  console.log("user", user);
+
   return (
     <>
       <LeftSidebar insideHome />
@@ -60,10 +75,7 @@ export function Home() {
           <Navbar insideHome />
         </div>
         <div className="add-post p-4 pb-0 flex items-start gap-2 border-b-2 border-slate-900">
-          <img
-            className="object-cover w-[50px] h-[50px] rounded-full"
-            src="https://source.unsplash.com/random"
-          />
+          <Avatar name={user?.name} src={user?.googlePicture} />
           <div className="flex flex-col flex-grow ">
             <textarea
               ref={textRef}

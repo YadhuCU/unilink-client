@@ -3,7 +3,7 @@ import { LeftSidebar } from "../components/LeftSidebar";
 import { Navbar } from "../components/Navbar";
 import { CiSearch } from "react-icons/ci";
 import { IoArrowBack } from "react-icons/io5";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { useRef } from "react";
 import { Button } from "../components/utils/Button";
@@ -18,6 +18,7 @@ import {
   ModalCloseButton,
   useDisclosure,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
 Message.propTypes = {};
 ChatPeople.propTypes = {
@@ -29,6 +30,13 @@ export function Message() {
   const parentOfChatPeople = useRef(null);
   const [showChat, setShowChat] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) navigate("/");
+  }, []);
 
   const handlActive = (e) => {
     const childNodes = parentOfChatPeople.current.childNodes;

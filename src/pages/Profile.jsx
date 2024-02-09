@@ -20,6 +20,7 @@ import {
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { FaCamera } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 Profile.propTypes = {};
 
@@ -36,6 +37,13 @@ export function Profile() {
     profile: "",
     cover: "",
   });
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) navigate("/");
+  }, []);
 
   useEffect(() => {
     if (

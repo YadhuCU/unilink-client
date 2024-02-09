@@ -22,6 +22,7 @@ import { LuImagePlus } from "react-icons/lu";
 import { FaTrash } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
 import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import { Avatar } from "@chakra-ui/react";
 
 LeftSidebar.propTypes = {
   insideHome: PropTypes.bool,
@@ -166,10 +167,7 @@ export function LeftSidebar({ insideHome }) {
             Create Post
           </Button>
           <div className="flex gap-3 items-center">
-            <img
-              className="w-[50px] h-[50px] object-cover rounded-full"
-              src="https://source.unsplash.com/random"
-            />
+            <Avatar name={user?.name} src={user?.googlePicture} />
             <div className="flex flex-col">
               <p className="text-sm font-semibold leading-5 ">{user?.name}</p>
               <p className="text-sm text-slate-500 leading-5">
@@ -201,10 +199,7 @@ export function LeftSidebar({ insideHome }) {
           <ModalCloseButton />
           <ModalBody>
             <div className="add-post p-4 pb-0 flex items-start gap-2 border-b-2 border-slate-950">
-              <img
-                className="object-cover w-[50px] h-[50px] rounded-full"
-                src="https://source.unsplash.com/random"
-              />
+              <Avatar name={user?.name} src={user?.googlePicture} />
               <div className="flex flex-col flex-grow ">
                 <textarea
                   ref={textRef}

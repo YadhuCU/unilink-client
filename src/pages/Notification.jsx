@@ -3,10 +3,20 @@ import { LeftSidebar } from "../components/LeftSidebar";
 import { RightSidebar } from "../components/RightSidebar";
 import { Navbar } from "../components/Navbar";
 import { Button } from "../components/utils/Button";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 Notification.propTypes = {};
 
 export function Notification() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+
+    if (!token) navigate("/");
+  }, []);
+
   return (
     <>
       <LeftSidebar />
