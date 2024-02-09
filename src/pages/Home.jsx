@@ -10,6 +10,8 @@ import { RightSidebar } from "../components/RightSidebar";
 import { dummyPost } from "../service/dummy";
 import { Avatar } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+import { createPostAPI } from "../service/allAPI.js";
+import { useToast } from "@chakra-ui/react";
 
 Home.propTypes = {};
 
@@ -22,6 +24,7 @@ export function Home() {
   const [imagePreview, setImagePreview] = useState("");
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const toast = useToast();
 
   useEffect(() => {
     const user = sessionStorage.getItem("user");
@@ -52,10 +55,37 @@ export function Home() {
     setPost({ ...post, postText: textarea.value });
   };
 
-  const handleCreatPost = () => {
-    console.log("Button is working");
+  const handleCreatPost = async () => {
     if (post.postImage || post.postText) {
-      console.log(post);
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        const reqHeader = {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        };
+        const result = await createPostAPI(reqHeader, post);
+        console.log("result", result);
+        if (result.status === 201) {
+          toast({
+            title: "Success",
+            description: "Post created successfully.",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+            position: "top",
+          });
+          handleClear();
+        } else {
+          toast({
+            title: "Error",
+            description: result.response.data,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position: "top",
+          });
+        }
+      }
     }
   };
 
@@ -127,7 +157,6 @@ export function Home() {
             </div>
           </div>
         </div>
-        <Post post={{ ...post, postImage: imagePreview }} />
         {dummyPost.map((item, index) => (
           <Post post={item} key={index} />
         ))}
