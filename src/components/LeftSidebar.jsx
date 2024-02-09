@@ -23,6 +23,8 @@ import { FaTrash } from "react-icons/fa";
 import { FaPencilAlt } from "react-icons/fa";
 import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/react";
+import { createPostAPI } from "../service/allAPI";
+import { useToast } from "@chakra-ui/react";
 
 LeftSidebar.propTypes = {
   insideHome: PropTypes.bool,
@@ -35,6 +37,13 @@ export function LeftSidebar({ insideHome }) {
   const currentLocation = useLocation();
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
+  const textRef = useRef(null);
+  const [post, setPost] = useState({
+    postText: "",
+    postImage: "",
+  });
+  const [imagePreview, setImagePreview] = useState("");
+  const toast = useToast();
 
   const handleOpenPost = () => {
     onOpen();
@@ -63,13 +72,6 @@ export function LeftSidebar({ insideHome }) {
     }
   }, []);
 
-  const textRef = useRef(null);
-  const [post, setPost] = useState({
-    postText: "",
-    postImage: "",
-  });
-  const [imagePreview, setImagePreview] = useState("");
-
   useEffect(() => {
     if (
       post.postImage.type == "image/png" ||
@@ -90,10 +92,38 @@ export function LeftSidebar({ insideHome }) {
     setPost({ ...post, postText: textarea.value });
   };
 
-  const handleCreatPost = () => {
-    console.log("Button is working");
+  const handleCreatPost = async () => {
     if (post.postImage || post.postText) {
-      console.log(post);
+      const token = sessionStorage.getItem("token");
+      if (token) {
+        const reqHeader = {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        };
+        const result = await createPostAPI(reqHeader, post);
+        console.log("result", result);
+        if (result.status === 201) {
+          toast({
+            title: "Success",
+            description: "Post created successfully.",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+            position: "top",
+          });
+          onClose();
+          handleClear();
+        } else {
+          toast({
+            title: "Error",
+            description: result.response.data,
+            status: "error",
+            duration: 3000,
+            isClosable: true,
+            position: "top",
+          });
+        }
+      }
     }
   };
 
