@@ -21,10 +21,6 @@ export function Post({ post, comment }) {
   const [bookmark, setBookmark] = useState(null);
 
   useEffect(() => {
-    getCurrentPostUser();
-  }, [post]);
-
-  useEffect(() => {
     if (bookmark) {
       if (bookmark?.bookmark?.includes(post?._id)) {
         setIsBookmarked(true);
@@ -33,27 +29,6 @@ export function Post({ post, comment }) {
       }
     }
   }, [bookmark]);
-
-  const getCurrentPostUser = async () => {
-    if (post?.postUser) {
-      const token = sessionStorage.getItem("token");
-
-      if (token) {
-        const reqHeader = {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        };
-
-        const result = await getUserAPI(post.postUser, reqHeader);
-
-        if (result.status === 200) {
-          setCurrentPostUser(result.data);
-        } else {
-          console.log("error", result.response.data);
-        }
-      }
-    }
-  };
 
   const handleNavigate = () => {
     if (!comment) {
@@ -87,20 +62,18 @@ export function Post({ post, comment }) {
   return (
     <div className="flex gap-4 items-start p-4 border-b-2 border-slate-900">
       <Avatar
-        name={currentPostUser?.name}
+        name={post?.user?.name}
         src={
-          (currentPostUser?.profilePicture &&
-            `${SERVER_URL}/user-image/${currentPostUser?.profilePicture}`) ||
-          currentPostUser?.googlePicture
+          (post?.user?.profilePicture &&
+            `${SERVER_URL}/user-image/${post?.user?.profilePicture}`) ||
+          post?.user?.googlePicture
         }
       />
       <div className="flex flex-col flex-grow flex-shrink gap-4">
         <div className="flex gap-1 ">
-          <p className="text-sm md:text-md font-semibold">
-            {currentPostUser?.name}
-          </p>
+          <p className="text-sm md:text-md font-semibold">{post?.user?.name}</p>
           <p className="text-sm md:text-md font-normal text-slate-500">
-            @{currentPostUser?.username}
+            @{post?.user?.username}
           </p>
           <div className=" ml-auto">
             <Menu>

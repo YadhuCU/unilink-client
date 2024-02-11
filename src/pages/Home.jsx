@@ -11,6 +11,7 @@ import { Avatar } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { createPostAPI, getAllPostAPI } from "../service/allAPI.js";
 import { useToast } from "@chakra-ui/react";
+import { SERVER_URL } from "../service/serverURL.js";
 
 Home.propTypes = {};
 
@@ -27,12 +28,14 @@ export function Home() {
   const [allPosts, setAllPosts] = useState([]);
 
   useEffect(() => {
-    const user = sessionStorage.getItem("user");
-
-    setUser(JSON.parse(user));
-
+    getUsereFromSession();
     getAllPosts();
   }, []);
+
+  const getUsereFromSession = async () => {
+    const user = await JSON.parse(sessionStorage.getItem("user"));
+    setUser(user);
+  };
 
   useEffect(() => {
     if (
@@ -51,7 +54,7 @@ export function Home() {
     const token = sessionStorage.getItem("token");
     if (token) {
       const reqHeader = {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       };
 
@@ -114,11 +117,18 @@ export function Home() {
     <>
       <LeftSidebar insideHome />
       <div className="home border-x border-slate-900 overflow-y-scroll">
-        <div className="sticky top-0 z-50 backdrop-blur-md">
+        <div className="sticky top-0 z-50 backdrop-blur-md ">
           <Navbar insideHome />
         </div>
-        <div className="add-post p-4 pb-0 flex items-start gap-2 border-b-2 border-slate-900">
-          <Avatar name={user?.name} src={user?.googlePicture} />
+        <div className="add-post p-4 pb-0 flex items-start gap-2 border-b-4 shadow-xl shadow-slate-900 border-slate-900">
+          <Avatar
+            name={user?.name}
+            src={
+              (user?.profilePicture &&
+                `${SERVER_URL}/user-image/${user?.profilePicture}`) ||
+              user?.googlePicture
+            }
+          />
           <div className="flex flex-col flex-grow ">
             <textarea
               ref={textRef}

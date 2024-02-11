@@ -55,3 +55,23 @@ export const updateProfileAPI = async (id, reqHeader, reqBody) => {
     reqBody,
   );
 };
+
+// get random user.
+export const getRandomUserAPI = async (reqHeader) => {
+  return await commonAPI("GET", `${SERVER_URL}/users/random`, reqHeader, "");
+};
+
+// get all user
+export const getAllUserAPI = async (reqHeader) => {
+  return await commonAPI("GET", `${SERVER_URL}/users/all`, reqHeader, "");
+};
+
+// get bookmarked posts.
+export const getBookmarkPostsAPI = async (id, reqHeader) => {
+  return await commonAPI(
+    "GET",
+    `${SERVER_URL}/users/bookmark/${id}`,
+    reqHeader,
+    "",
+  );
+};
