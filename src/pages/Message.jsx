@@ -32,12 +32,6 @@ export function Message() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = sessionStorage.getItem("token");
-
-    if (!token) navigate("/");
-  }, []);
-
   const handlActive = (e) => {
     const childNodes = parentOfChatPeople.current.childNodes;
     childNodes.forEach((item) => item.classList.remove("chat-active"));

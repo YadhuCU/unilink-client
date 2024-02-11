@@ -12,12 +12,6 @@ Bookmark.propTypes = {};
 export function Bookmark() {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = sessionStorage.getItem("token");
-
-    if (!token) navigate("/");
-  }, []);
-
   return (
     <>
       <LeftSidebar />

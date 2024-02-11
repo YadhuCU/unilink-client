@@ -7,7 +7,6 @@ import { FaTrash } from "react-icons/fa";
 import { Post } from "../components/Post";
 import { LeftSidebar } from "../components/LeftSidebar";
 import { RightSidebar } from "../components/RightSidebar";
-import { dummyPost } from "../service/dummy";
 import { Avatar } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { createPostAPI, getAllPostAPI } from "../service/allAPI.js";
@@ -29,11 +28,8 @@ export function Home() {
 
   useEffect(() => {
     const user = sessionStorage.getItem("user");
-    const token = sessionStorage.getItem("token");
 
     setUser(JSON.parse(user));
-
-    if (!token) navigate("/");
 
     getAllPosts();
   }, []);

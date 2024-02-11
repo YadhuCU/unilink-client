@@ -62,16 +62,13 @@ export function Auth({ signup }) {
   };
 
   // login
-  const handleLogin = async (google, googleUserData) => {
+  const handleLogin = async (registeredUserData) => {
     const data = {
-      email: google ? googleUserData.email : userData.email,
-      password: google ? googleUserData.password : userData.password,
+      email: registeredUserData.email || userData.email,
+      password: registeredUserData.password || userData.password,
     };
 
-    console.log("login data", data);
-
     const result = await loginAPI(data);
-    console.log(result);
     if (result.status === 201) {
       sessionStorage.setItem("user", JSON.stringify(result.data.user, null, 4));
       sessionStorage.setItem("token", result.data.token);
@@ -91,17 +88,15 @@ export function Auth({ signup }) {
 
   // register
   const handleSignup = async (google, googleUserData) => {
-    const data = google ? googleUserData : userData;
-
-    console.log("data", data);
+    const data = googleUserData || userData;
 
     const result = await registerAPI(data);
 
     if (result.status === 201) {
-      handleLogin(google, googleUserData);
+      handleLogin(result.data);
     } else {
       if (google) {
-        handleLogin(google, googleUserData);
+        handleLogin(googleUserData);
       } else {
         toast({
           title: "Error",
@@ -168,7 +163,7 @@ export function Auth({ signup }) {
         <p className="animation text-center text-3xl font-[var(--fw-600)] tracking-widest">
           {signup ? "Sign Up" : "Sing In"}
         </p>
-        {/* firstName */}
+        {/* name */}
         {signup && (
           <div className="animation w-full">
             <div
@@ -187,15 +182,12 @@ export function Auth({ signup }) {
                   setUserData({ ...userData, name: e.target.value })
                 }
                 autoComplete="false"
-                onKeyDown={(e) =>
-                  e.key == "Enter" && passwordRef.current.focus()
-                }
                 className="bg-transparent w-full px-5 py-4 outline-none font-[var(--fw-400)] tracking-widest placeholder:tracking-widest placeholder:text-[var(--clr-white)]"
               />
             </div>
           </div>
         )}
-        {/* lastName */}
+        {/* username */}
         {signup && (
           <div className="animation w-full">
             <div
@@ -214,9 +206,6 @@ export function Auth({ signup }) {
                   setUserData({ ...userData, username: e.target.value })
                 }
                 autoComplete="false"
-                onKeyDown={(e) =>
-                  e.key == "Enter" && passwordRef.current.focus()
-                }
                 className="bg-transparent w-full px-5 py-4 outline-none font-[var(--fw-400)] tracking-widest placeholder:tracking-widest placeholder:text-[var(--clr-white)]"
               />
             </div>
@@ -239,7 +228,6 @@ export function Auth({ signup }) {
               value={userData.email}
               onChange={(e) => handleEmailChange(e)}
               autoComplete="false"
-              onKeyDown={(e) => e.key == "Enter" && passwordRef.current.focus()}
               className="bg-transparent w-full px-5 py-4 outline-none font-[var(--fw-400)] tracking-widest placeholder:tracking-widest placeholder:text-[var(--clr-white)]"
             />
           </div>
@@ -266,12 +254,6 @@ export function Auth({ signup }) {
             value={userData.password}
             onChange={(e) =>
               setUserData({ ...userData, password: e.target.value })
-            }
-            onKeyDown={(e) =>
-              e.key == "Enter" &&
-              userData.password &&
-              userData.email &&
-              handleLogin()
             }
             className="bg-transparent w-full px-5 py-4 outline-none font-[var(--fw-400)] tracking-widest placeholder:tracking-widest placeholder:text-[var(--clr-white)]"
           />

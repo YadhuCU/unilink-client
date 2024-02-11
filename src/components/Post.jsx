@@ -6,7 +6,7 @@ import { BiSolidComment } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { Menu, MenuButton, MenuList, MenuItem, Avatar } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { getUserAPI } from "../service/allAPI";
+import { getUserAPI, toggleBookmarkAPI } from "../service/allAPI";
 import { SERVER_URL } from "../service/serverURL";
 
 Post.propTypes = {
@@ -16,15 +16,25 @@ Post.propTypes = {
 
 export function Post({ post, comment }) {
   const naviage = useNavigate();
-  const [user, setUser] = useState([]);
+  const [currentPostUser, setCurrentPostUser] = useState([]);
+  const [isBookmarked, setIsBookmarked] = useState(null);
+  const [bookmark, setBookmark] = useState(null);
 
   useEffect(() => {
-    getUser();
+    getCurrentPostUser();
   }, [post]);
 
-  console.log("postuser", post?.postUser);
-  console.log("post", post);
-  const getUser = async () => {
+  useEffect(() => {
+    if (bookmark) {
+      if (bookmark?.bookmark?.includes(post?._id)) {
+        setIsBookmarked(true);
+      } else {
+        setIsBookmarked(false);
+      }
+    }
+  }, [bookmark]);
+
+  const getCurrentPostUser = async () => {
     if (post?.postUser) {
       const token = sessionStorage.getItem("token");
 
@@ -37,7 +47,7 @@ export function Post({ post, comment }) {
         const result = await getUserAPI(post.postUser, reqHeader);
 
         if (result.status === 200) {
-          setUser(result.data);
+          setCurrentPostUser(result.data);
         } else {
           console.log("error", result.response.data);
         }
@@ -51,14 +61,46 @@ export function Post({ post, comment }) {
     }
   };
 
+  const handleToggleBookmark = async () => {
+    const token = sessionStorage.getItem("token");
+
+    const reqBody = {
+      postId: post?._id,
+    };
+
+    if (token) {
+      const reqHeader = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+
+      const result = await toggleBookmarkAPI(reqHeader, reqBody);
+
+      if (result.status === 200) {
+        setBookmark(result.data);
+      } else {
+        console.log("error", result.response.data);
+      }
+    }
+  };
+
   return (
     <div className="flex gap-4 items-start p-4 border-b-2 border-slate-900">
-      <Avatar name={user?.name} src={user?.googlePicture} />
+      <Avatar
+        name={currentPostUser?.name}
+        src={
+          (currentPostUser?.profilePicture &&
+            `${SERVER_URL}/user-image/${currentPostUser?.profilePicture}`) ||
+          currentPostUser?.googlePicture
+        }
+      />
       <div className="flex flex-col flex-grow flex-shrink gap-4">
         <div className="flex gap-1 ">
-          <p className="text-sm md:text-md font-semibold">{user?.name}</p>
+          <p className="text-sm md:text-md font-semibold">
+            {currentPostUser?.name}
+          </p>
           <p className="text-sm md:text-md font-normal text-slate-500">
-            @{user?.username}
+            @{currentPostUser?.username}
           </p>
           <div className=" ml-auto">
             <Menu>
@@ -109,8 +151,13 @@ export function Post({ post, comment }) {
               <p className="text-xs text-slate-600">23</p>
             </div>
           )}
-          <div className=" cursor-pointer flex items-center gap-2">
-            <MdBookmark className="text-lg" />
+          <div
+            onClick={handleToggleBookmark}
+            className=" cursor-pointer flex items-center gap-2"
+          >
+            <MdBookmark
+              className={`${isBookmarked && "text-yellow-100"} text-lg`}
+            />
           </div>
         </div>
       </div>

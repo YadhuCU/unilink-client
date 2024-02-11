@@ -25,6 +25,7 @@ import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { Avatar } from "@chakra-ui/react";
 import { createPostAPI } from "../service/allAPI";
 import { useToast } from "@chakra-ui/react";
+import { SERVER_URL } from "../service/serverURL";
 
 LeftSidebar.propTypes = {
   insideHome: PropTypes.bool,
@@ -65,11 +66,7 @@ export function LeftSidebar({ insideHome }) {
     if (currList) {
       currList.classList.add("bg-slate-800");
     }
-    // taking user details in session
-    const user = JSON.parse(sessionStorage.getItem("user"));
-    if (user) {
-      setUser(user);
-    }
+    getUserFromSession();
   }, []);
 
   useEffect(() => {
@@ -84,6 +81,14 @@ export function LeftSidebar({ insideHome }) {
       setImagePreview("");
     }
   }, [post.postImage]);
+
+  const getUserFromSession = async () => {
+    // taking user details in session
+    const user = await JSON.parse(sessionStorage.getItem("user"));
+    if (user) {
+      setUser(user);
+    }
+  };
 
   const handleKeyUp = () => {
     const textarea = textRef.current;
@@ -138,6 +143,7 @@ export function LeftSidebar({ insideHome }) {
     sessionStorage.setItem("user", "");
     sessionStorage.setItem("token", "");
   };
+
   return (
     <>
       <div
@@ -197,7 +203,14 @@ export function LeftSidebar({ insideHome }) {
             Create Post
           </Button>
           <div className="flex gap-3 items-center">
-            <Avatar name={user?.name} src={user?.googlePicture} />
+            <Avatar
+              name={user?.name}
+              src={
+                (user?.profilePicture &&
+                  `${SERVER_URL}/user-image/${user?.profilePicture}`) ||
+                user?.googlePicture
+              }
+            />
             <div className="flex flex-col">
               <p className="text-sm font-semibold leading-5 ">{user?.name}</p>
               <p className="text-sm text-slate-500 leading-5">

@@ -28,10 +28,30 @@ export const getAllPostAPI = async (reqHeader) => {
 
 // get user.
 export const getUserAPI = async (id, reqHeader) => {
-  return await commonAPI("GET", `${SERVER_URL}/users/${id}`, reqHeader, "");
+  return await commonAPI("GET", `${SERVER_URL}/user/${id}`, reqHeader, "");
 };
 
 // get Post
 export const getPostAPI = async (id, reqHeader) => {
   return await commonAPI("GET", `${SERVER_URL}/posts/${id}`, reqHeader, "");
+};
+
+// toggle Bookmark
+export const toggleBookmarkAPI = async (reqHeader, reqBody) => {
+  return await commonAPI(
+    "PATCH",
+    `${SERVER_URL}/user/bookmark/toggle`,
+    reqHeader,
+    reqBody,
+  );
+};
+
+// update profile.
+export const updateProfileAPI = async (id, reqHeader, reqBody) => {
+  return await commonAPI(
+    "PUT",
+    `${SERVER_URL}/users/profile/update/${id}`,
+    reqHeader,
+    reqBody,
+  );
 };
