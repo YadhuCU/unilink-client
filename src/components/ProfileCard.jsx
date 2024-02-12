@@ -6,15 +6,19 @@ import { useState, useEffect } from "react";
 import { dateFormatter } from "../utils/dateFormatter";
 import { Avatar } from "@chakra-ui/react";
 import { SERVER_URL } from "../service/serverURL";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 ProfileCard.propTypes = {};
 
 export function ProfileCard() {
   const [user, setUser] = useState({});
+  const { currentUser } = useSelector((state) => state.userProfileSlice);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getUserFromSession();
-  }, []);
+  }, [currentUser]);
 
   const getUserFromSession = async () => {
     const user = await JSON.parse(sessionStorage.getItem("user"));
@@ -24,11 +28,10 @@ export function ProfileCard() {
   };
 
   return (
-    <div className="w-full flex flex-col gap-4 items-center rounded-3xl p-10 bg-slate-900">
-      {/* <img */}
-      {/*   className="w-[100px] h-[100px] rounded-full object-cover" */}
-      {/*   src="https://source.unsplash.com/random" */}
-      {/* /> */}
+    <div
+      onClick={() => navigate(`/profile/${user?._id}`)}
+      className="w-full flex flex-col gap-4 items-center rounded-3xl p-10 bg-slate-900"
+    >
       <Avatar
         size={"2xl"}
         name={user?.name}

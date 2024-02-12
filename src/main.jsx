@@ -9,6 +9,8 @@ import { extendTheme } from "@chakra-ui/react";
 import { menuTheme } from "./chakra/Menu";
 import { modalTheme } from "./chakra/Modal";
 import { drawerTheme } from "./chakra/Drawer";
+import store from "./redux/store.js";
+import { Provider } from "react-redux";
 
 const theme = extendTheme({
   components: {
@@ -23,7 +25,9 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <GoogleOAuthProvider clientId="378612703638-29q2csb7rh6l334jtn104bnebm4k0ki3.apps.googleusercontent.com">
       <BrowserRouter>
         <ChakraProvider theme={theme}>
-          <App />
+          <Provider store={store}>
+            <App />
+          </Provider>
         </ChakraProvider>
       </BrowserRouter>
     </GoogleOAuthProvider>

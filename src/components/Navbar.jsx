@@ -3,6 +3,11 @@ import { useRef, useEffect } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { RiMailAddLine } from "react-icons/ri";
 import { IoArrowBack } from "react-icons/io5";
+import {
+  getAllPostsReducer,
+  getFollowingUsersPostsReducer,
+} from "../redux/allPostsSlice.js";
+import { useDispatch } from "react-redux";
 
 Navbar.propTypes = {
   insideHome: PropTypes.bool,
@@ -45,6 +50,11 @@ export function Navbar({
 
 function HomeNavbar() {
   const activeDivRef = useRef(null);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllPostsReducer());
+  }, []);
 
   // handling the change effect when clicking the options
   useEffect(() => {
@@ -85,10 +95,16 @@ function HomeNavbar() {
       ref={activeDivRef}
       className="w-full h-[50px] flex items-center border-b border-slate-900"
     >
-      <ul className="h-full w-full flex justify-center items-center font-semibold text-slate-300 transition  hover:bg-slate-900  cursor-pointer">
+      <ul
+        onClick={() => dispatch(getAllPostsReducer())}
+        className="h-full w-full flex justify-center items-center font-semibold text-slate-300 transition  hover:bg-slate-900  cursor-pointer"
+      >
         <li className="h-full relative flex items-center">For you</li>
       </ul>
-      <ul className="h-full w-full flex justify-center items-center font-semibold text-slate-300 transition hover:bg-slate-900  cursor-pointer">
+      <ul
+        onClick={() => dispatch(getFollowingUsersPostsReducer())}
+        className="h-full w-full flex justify-center items-center font-semibold text-slate-300 transition hover:bg-slate-900  cursor-pointer"
+      >
         <li className="h-full relative flex items-center">Following</li>
       </ul>
     </div>

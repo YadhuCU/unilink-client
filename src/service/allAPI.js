@@ -62,8 +62,13 @@ export const getRandomUserAPI = async (reqHeader) => {
 };
 
 // get all user
-export const getAllUserAPI = async (reqHeader) => {
-  return await commonAPI("GET", `${SERVER_URL}/users/all`, reqHeader, "");
+export const getAllUserAPI = async (searchInput, reqHeader) => {
+  return await commonAPI(
+    "GET",
+    `${SERVER_URL}/users/all?search=${searchInput}`,
+    reqHeader,
+    "",
+  );
 };
 
 // get bookmarked posts.
@@ -71,6 +76,26 @@ export const getBookmarkPostsAPI = async (id, reqHeader) => {
   return await commonAPI(
     "GET",
     `${SERVER_URL}/users/bookmark/${id}`,
+    reqHeader,
+    "",
+  );
+};
+
+// folllow - unfollow user.
+export const followUnfollowUserAPI = async (id, reqHeader) => {
+  return await commonAPI(
+    "PUT",
+    `${SERVER_URL}/users/follow-unfollow/${id}`,
+    reqHeader,
+    {},
+  );
+};
+
+// get following users post.
+export const getFollowingUsersPostsAPI = async (reqHeader) => {
+  return await commonAPI(
+    "GET",
+    `${SERVER_URL}/posts/following/post`,
     reqHeader,
     "",
   );

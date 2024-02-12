@@ -31,7 +31,7 @@ function App() {
             element={isAuthenticated ? <Bookmark /> : <Auth />}
           />
           <Route
-            path="/profile"
+            path="/profile/:userId"
             element={isAuthenticated ? <Profile /> : <Auth />}
           />
           <Route

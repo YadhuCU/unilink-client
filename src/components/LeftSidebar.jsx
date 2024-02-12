@@ -26,6 +26,7 @@ import { Avatar } from "@chakra-ui/react";
 import { createPostAPI } from "../service/allAPI";
 import { useToast } from "@chakra-ui/react";
 import { SERVER_URL } from "../service/serverURL";
+import { useSelector } from "react-redux";
 
 LeftSidebar.propTypes = {
   insideHome: PropTypes.bool,
@@ -45,6 +46,7 @@ export function LeftSidebar({ insideHome }) {
   });
   const [imagePreview, setImagePreview] = useState("");
   const toast = useToast();
+  const { currentUser } = useSelector((state) => state.userProfileSlice);
 
   const handleOpenPost = () => {
     onOpen();
@@ -59,6 +61,10 @@ export function LeftSidebar({ insideHome }) {
   };
 
   useEffect(() => {
+    getUserFromSession();
+  }, [currentUser]);
+
+  useEffect(() => {
     // handling the active state effect of the button when clicking
     const activeListName = currentLocation.pathname.split("/")[1];
     const sidebar = document.getElementById("left-side-bar");
@@ -66,7 +72,6 @@ export function LeftSidebar({ insideHome }) {
     if (currList) {
       currList.classList.add("bg-slate-800");
     }
-    getUserFromSession();
   }, []);
 
   useEffect(() => {
@@ -183,7 +188,7 @@ export function LeftSidebar({ insideHome }) {
               <div className="text-2xl hidden md:block">Message</div>
             </li>
           </Link>
-          <Link to="/profile">
+          <Link to={`/profile/${user?._id}`}>
             <li className="profile flex gap-4 items-center px-5 py-3 rounded-full hover:bg-slate-900 transition cursor-pointer">
               <FaUser className="text-3xl" />
               <div className="text-2xl hidden md:block">Profile</div>
@@ -242,7 +247,14 @@ export function LeftSidebar({ insideHome }) {
           <ModalCloseButton />
           <ModalBody>
             <div className="add-post p-4 pb-0 flex items-start gap-2 border-b-2 border-slate-950">
-              <Avatar name={user?.name} src={user?.googlePicture} />
+              <Avatar
+                name={user?.name}
+                src={
+                  (user?.profilePicture &&
+                    `${SERVER_URL}/user-image/${user?.profilePicture}`) ||
+                  user?.googlePicture
+                }
+              />
               <div className="flex flex-col flex-grow ">
                 <textarea
                   ref={textRef}

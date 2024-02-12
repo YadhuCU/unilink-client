@@ -3,7 +3,6 @@ import { LeftSidebar } from "../components/LeftSidebar";
 import { RightSidebar } from "../components/RightSidebar";
 import { Navbar } from "../components/Navbar";
 import { Post } from "../components/Post";
-import { dummyPost } from "../service/dummy";
 import { useEffect, useState } from "react";
 import { getBookmarkPostsAPI } from "../service/allAPI";
 

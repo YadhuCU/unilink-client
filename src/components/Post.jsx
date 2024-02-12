@@ -6,7 +6,7 @@ import { BiSolidComment } from "react-icons/bi";
 import { useNavigate } from "react-router-dom";
 import { Menu, MenuButton, MenuList, MenuItem, Avatar } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { getUserAPI, toggleBookmarkAPI } from "../service/allAPI";
+import { toggleBookmarkAPI } from "../service/allAPI";
 import { SERVER_URL } from "../service/serverURL";
 
 Post.propTypes = {
@@ -16,7 +16,6 @@ Post.propTypes = {
 
 export function Post({ post, comment }) {
   const naviage = useNavigate();
-  const [currentPostUser, setCurrentPostUser] = useState([]);
   const [isBookmarked, setIsBookmarked] = useState(null);
   const [bookmark, setBookmark] = useState(null);
 

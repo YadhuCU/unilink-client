@@ -9,9 +9,14 @@ import { LeftSidebar } from "../components/LeftSidebar";
 import { RightSidebar } from "../components/RightSidebar";
 import { Avatar } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { createPostAPI, getAllPostAPI } from "../service/allAPI.js";
+import {
+  createPostAPI,
+  getAllPostAPI,
+  getFollowingUsersPostsAPI,
+} from "../service/allAPI.js";
 import { useToast } from "@chakra-ui/react";
 import { SERVER_URL } from "../service/serverURL.js";
+import { useDispatch, useSelector } from "react-redux";
 
 Home.propTypes = {};
 
@@ -22,14 +27,12 @@ export function Home() {
     postImage: "",
   });
   const [imagePreview, setImagePreview] = useState("");
-  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const toast = useToast();
-  const [allPosts, setAllPosts] = useState([]);
+  const { allPosts, loading } = useSelector((state) => state.allPostsSlice);
 
   useEffect(() => {
     getUsereFromSession();
-    getAllPosts();
   }, []);
 
   const getUsereFromSession = async () => {
@@ -50,22 +53,35 @@ export function Home() {
     }
   }, [post.postImage]);
 
-  const getAllPosts = async () => {
-    const token = sessionStorage.getItem("token");
-    if (token) {
-      const reqHeader = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      };
+  // const getAllPosts = async () => {
+  //   const token = sessionStorage.getItem("token");
+  //   if (token) {
+  //     const reqHeader = {
+  //       "Content-Type": "application/json",
+  //       Authorization: `Bearer ${token}`,
+  //     };
+  //
+  //     const result = await getAllPostAPI(reqHeader);
+  //     if (result.status === 200) {
+  //       setAllPosts(result.data);
+  //     } else {
+  //       console.log("error", result.response.data);
+  //     }
+  //   }
+  // };
 
-      const result = await getAllPostAPI(reqHeader);
-      if (result.status === 200) {
-        setAllPosts(result.data);
-      } else {
-        console.log("error", result.response.data);
-      }
-    }
-  };
+  // const getFollowingUsersPosts = async () => {
+  //   const token = sessionStorage.getItem("token");
+  //   if (token) {
+  //     const reqHeader = {
+  //       "Content-Type": "application/json",
+  //       Authorization: `Bearer ${token}`,
+  //     };
+  //
+  //     const result = await getFollowingUsersPostsAPI(reqHeader);
+  //     console.log("result->", result);
+  //   }
+  // };
 
   const handleKeyUp = () => {
     const textarea = textRef.current;

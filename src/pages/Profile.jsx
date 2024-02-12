@@ -23,7 +23,11 @@ import { useState, useEffect } from "react";
 import { FaCamera } from "react-icons/fa";
 import { SERVER_URL } from "../service/serverURL";
 import { useToast } from "@chakra-ui/react";
-import { updateProfileAPI } from "../service/allAPI";
+import { getUserAPI, updateProfileAPI } from "../service/allAPI";
+import { useDispatch, useSelector } from "react-redux";
+import { updateCurrentUserReducer } from "../redux/userProfileSlice";
+import { dateFormatter } from "../utils/dateFormatter";
+import { useParams } from "react-router-dom";
 
 Profile.propTypes = {};
 
@@ -35,15 +39,29 @@ export function Profile() {
     cover: "",
   });
   const toast = useToast();
+  const dispatch = useDispatch();
+  const { currentUser } = useSelector((state) => state.userProfileSlice);
+  const { userId } = useParams();
 
   useEffect(() => {
     getCurrentUser();
-  }, []);
+  }, [currentUser, userId]);
 
   const getCurrentUser = async () => {
-    const currentUser = await JSON.parse(sessionStorage.getItem("user"));
-    if (currentUser) {
-      setUser(currentUser);
+    const token = sessionStorage.getItem("token");
+
+    if (token) {
+      const reqHeader = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+      const result = await getUserAPI(userId, reqHeader);
+
+      if (result.status === 200) {
+        setUser(result.data);
+      } else {
+        console.log("Error", result.response.data);
+      }
     }
   };
 
@@ -82,7 +100,6 @@ export function Profile() {
         position: "top",
       });
     }
-    console.log("user-update", user);
 
     const token = sessionStorage.getItem("token");
     if (token) {
@@ -100,6 +117,7 @@ export function Profile() {
       if (result.status === 200) {
         sessionStorage.setItem("user", JSON.stringify(result.data));
         setUser(result.data);
+        dispatch(updateCurrentUserReducer(result.data));
         onClose();
       } else {
         console.log("Error upload", result.response.data);
@@ -149,16 +167,13 @@ export function Profile() {
                       : user?.googlePicture
                   }
                 />
-                {/* <img */}
-                {/*   className="object-cover w-[150px] h-[150px] rounded-full" */}
-                {/*   src={ */}
-                {/*     user?.profilePicture */}
-                {/*       ? `${SERVER_URL}/uploads/profile/${user?.profilePicture}` */}
-                {/*       : user?.googlePicture */}
-                {/*   } */}
-                {/* /> */}
               </div>
-              <Button buttonClick={onOpen} classes={`py-[8px] ml-auto`}>
+              <Button
+                buttonClick={onOpen}
+                classes={`${
+                  currentUser?._id === userId ? "z-1 " : "z-[-1] "
+                } py-[8px] ml-auto`}
+              >
                 Edit Profile
               </Button>
             </div>
@@ -174,7 +189,9 @@ export function Profile() {
                   <FaBirthdayCake />
                   <span className="text-sm font-normal">
                     {`Birthday ${
-                      user?.dateOfBirth ? user?.dateOfBirth : "--/--/----"
+                      user?.dateOfBirth
+                        ? dateFormatter(user?.dateOfBirth)
+                        : "--/--/----"
                     }`}
                   </span>
                 </div>

@@ -9,6 +9,8 @@ import { LeftSidebar } from "../components/LeftSidebar";
 import { RightSidebar } from "../components/RightSidebar";
 import { useParams } from "react-router-dom";
 import { getPostAPI } from "../service/allAPI";
+import { Avatar } from "@chakra-ui/react";
+import { SERVER_URL } from "../service/serverURL";
 
 PostDetails.propTypes = {};
 
@@ -21,10 +23,19 @@ export function PostDetails() {
   const [imagePreview, setImagePreview] = useState("");
   const { id } = useParams();
   const [post, setPost] = useState([]);
+  const [user, setUser] = useState({});
 
   useEffect(() => {
     getPost();
+    getUserFromSession();
   }, []);
+
+  const getUserFromSession = () => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    if (user) {
+      setUser(user);
+    }
+  };
 
   useEffect(() => {
     if (
@@ -44,7 +55,7 @@ export function PostDetails() {
 
     if (token) {
       const reqHeader = {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       };
 
@@ -86,10 +97,14 @@ export function PostDetails() {
           <Navbar insidePost />
         </div>
         <Post post={post} />
-        <div className="add-post p-4 pb-0 flex items-start gap-2 border-b-2 border-slate-900">
-          <img
-            className="object-cover w-[50px] h-[50px] rounded-full"
-            src="https://source.unsplash.com/random"
+        <div className="add-post p-4 pb-0 flex items-start  shadow-xl shadow-slate-900  gap-2 border-b-2 border-slate-900">
+          <Avatar
+            name={user?.name}
+            src={
+              (user?.profilePicture &&
+                `${SERVER_URL}/user-image/${user?.profilePicture}`) ||
+              user?.googlePicture
+            }
           />
           <div className="flex flex-col flex-grow ">
             <textarea

@@ -15,35 +15,66 @@ import {
 RightSidebar.propTypes = {};
 import { useRef, useState, useEffect } from "react";
 import { Button } from "./utils/Button";
-import { getAllUserAPI } from "../service/allAPI";
+import { getAllUserAPI, followUnfollowUserAPI } from "../service/allAPI";
 import { Avatar } from "@chakra-ui/react";
 import { SERVER_URL } from "../service/serverURL";
+import { Link } from "react-router-dom";
 
 export function RightSidebar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef(null);
-
-  const [randomUsers, setRandomUsers] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
+  const [allUsers, setAllUsers] = useState([]);
+  const [currentUser, setCurrentUser] = useState({});
 
   useEffect(() => {
-    getRandomUsers();
-  }, []);
+    getAllUsers();
+    getCurrentUserFromSession();
+  }, [searchInput]);
 
-  const getRandomUsers = async () => {
+  const getCurrentUserFromSession = () => {
+    const user = JSON.parse(sessionStorage.getItem("user"));
+
+    if (user) {
+      setCurrentUser(user);
+    }
+  };
+
+  const getAllUsers = async () => {
     const token = sessionStorage.getItem("token");
     if (token) {
       const reqHeader = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       };
-      const result = await getAllUserAPI(reqHeader);
+      const result = await getAllUserAPI(searchInput, reqHeader);
       if (result.status === 200) {
-        setRandomUsers(result.data);
+        setAllUsers(result.data);
       } else {
         console.log("Error", result);
       }
     }
   };
+
+  const handleFollowUnfollowUser = async (followerId) => {
+    console.log("handleFollowUnfollowUser");
+    const token = sessionStorage.getItem("token");
+    console.log("handleFollowUnfollowUser.token", token);
+    if (token) {
+      const reqHeader = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+      const result = await followUnfollowUserAPI(followerId, reqHeader);
+      console.log("handleFollowUnfollowUser.result", result.data);
+      if (result.status === 200) {
+        getAllUsers();
+      } else {
+        console.log("Error", result);
+      }
+    }
+  };
+
   return (
     <div className="hidden lg:flex flex-col gap-10 px-3">
       <div className="h-[50px] flex items-center py-2 ">
@@ -72,19 +103,17 @@ export function RightSidebar() {
 
           <DrawerBody>
             <input
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               className="outline-none border-4 border-slate-800 px-5 py-3 rounded-full w-full bg-transparent"
               type="text"
               placeholder="Search People..."
             />
 
             <div className="mt-5 flex flex-col gap-3 mb-4">
-              {randomUsers.length > 0 &&
-                randomUsers.map((user, index) => (
+              {allUsers.length > 0 &&
+                allUsers.map((user, index) => (
                   <div key={index} className="flex gap-3 items-center">
-                    {/* <img */}
-                    {/*   className="w-[50px] h-[50px] object-cover rounded-full" */}
-                    {/*   src="https://source.unsplash.com/random" */}
-                    {/* /> */}
                     <Avatar
                       name={user?.name}
                       src={
@@ -93,15 +122,27 @@ export function RightSidebar() {
                         user?.googlePicture
                       }
                     />
-                    <div className="flex flex-col">
-                      <p className="text-sm font-semibold leading-5 ">
-                        {user?.name}
-                      </p>
-                      <p className="text-sm text-slate-500 leading-5">
-                        @{user?.username}
-                      </p>
-                    </div>
-                    <Button classes={`py-[5px] ml-auto`}>follow</Button>
+                    <Link
+                      to={`/profile/${user?._id}`}
+                      onClick={() => onClose()}
+                    >
+                      <div className="flex flex-col">
+                        <p className="text-sm font-semibold leading-5 ">
+                          {user?.name}
+                        </p>
+                        <p className="text-sm text-slate-500 leading-5">
+                          @{user?.username}
+                        </p>
+                      </div>
+                    </Link>
+                    <Button
+                      buttonClick={() => handleFollowUnfollowUser(user?._id)}
+                      classes={`py-[5px] ml-auto`}
+                    >
+                      {user?.followers?.includes(currentUser?._id)
+                        ? "unfollow"
+                        : "follow"}
+                    </Button>
                   </div>
                 ))}
             </div>
