@@ -32,8 +32,8 @@ export function RightSidebar() {
     getCurrentUserFromSession();
   }, [searchInput]);
 
-  const getCurrentUserFromSession = () => {
-    const user = JSON.parse(sessionStorage.getItem("user"));
+  const getCurrentUserFromSession = async () => {
+    const user = await JSON.parse(sessionStorage.getItem("user"));
 
     if (user) {
       setCurrentUser(user);
@@ -57,16 +57,14 @@ export function RightSidebar() {
   };
 
   const handleFollowUnfollowUser = async (followerId) => {
-    console.log("handleFollowUnfollowUser");
     const token = sessionStorage.getItem("token");
-    console.log("handleFollowUnfollowUser.token", token);
     if (token) {
       const reqHeader = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       };
       const result = await followUnfollowUserAPI(followerId, reqHeader);
-      console.log("handleFollowUnfollowUser.result", result.data);
+      console.log("result", result);
       if (result.status === 200) {
         getAllUsers();
       } else {

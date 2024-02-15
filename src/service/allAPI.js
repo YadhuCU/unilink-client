@@ -100,3 +100,83 @@ export const getFollowingUsersPostsAPI = async (reqHeader) => {
     "",
   );
 };
+
+// add comment to post.
+export const addCommentToPostAPI = async (postId, reqHeader, reqBody) => {
+  return await commonAPI(
+    "POST",
+    `${SERVER_URL}/posts/comment/${postId}`,
+    reqHeader,
+    reqBody,
+  );
+};
+
+// get following users post.
+export const getUserPostsAPI = async (userId, reqHeader) => {
+  return await commonAPI(
+    "GET",
+    `${SERVER_URL}/posts/user/${userId}`,
+    reqHeader,
+    "",
+  );
+};
+
+// get following users post.
+export const getUserRepliedPostsAPI = async (userId, reqHeader) => {
+  return await commonAPI(
+    "GET",
+    `${SERVER_URL}/posts/user/replied/${userId}`,
+    reqHeader,
+    "",
+  );
+};
+
+// toggle Bookmark
+export const likeOrUnlikePostAPI = async (postId, reqHeader) => {
+  return await commonAPI(
+    "PATCH",
+    `${SERVER_URL}/posts/like/${postId}`,
+    reqHeader,
+    "",
+  );
+};
+
+// get following users post.
+export const getUserLikedPostsAPI = async (userId, reqHeader) => {
+  return await commonAPI(
+    "GET",
+    `${SERVER_URL}/posts/user/liked/${userId}`,
+    reqHeader,
+    "",
+  );
+};
+
+// send Message.
+export const sendMessageAPI = async (reqHeader, reqBody) => {
+  return await commonAPI(
+    "POST",
+    `${SERVER_URL}/message/add`,
+    reqHeader,
+    reqBody,
+  );
+};
+
+// get all conversations.
+export const getAllConversationsAPI = async (reqHeader) => {
+  return await commonAPI(
+    "GET",
+    `${SERVER_URL}/message/conversations/all`,
+    reqHeader,
+    "",
+  );
+};
+
+// get message.
+export const getMessageAPI = async (otherUserId, reqHeader) => {
+  return await commonAPI(
+    "GET",
+    `${SERVER_URL}/message/users/${otherUserId}`,
+    reqHeader,
+    "",
+  );
+};

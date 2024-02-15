@@ -6,8 +6,12 @@ import { IoArrowBack } from "react-icons/io5";
 import {
   getAllPostsReducer,
   getFollowingUsersPostsReducer,
+  getUsersPostsReducer,
+  getUsersRepliedPostsReducer,
+  getUsersLikedPostsReducer,
 } from "../redux/allPostsSlice.js";
 import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
 
 Navbar.propTypes = {
   insideHome: PropTypes.bool,
@@ -152,6 +156,14 @@ function ProfileNavbar() {
 
 function ProfileDetailNavbar() {
   const activeDivRef = useRef(null);
+  const dispatch = useDispatch();
+  const { userId } = useParams();
+
+  useEffect(() => {
+    dispatch(getUsersPostsReducer(userId));
+  }, [userId]);
+
+  // implement the userposts when clicking the navbar.
 
   // handling the change effect when clicking the options
   useEffect(() => {
@@ -192,13 +204,22 @@ function ProfileDetailNavbar() {
       ref={activeDivRef}
       className="w-full h-[50px] flex items-center border-b border-slate-900"
     >
-      <ul className="h-full w-full flex justify-center items-center font-semibold text-slate-300 transition  hover:bg-slate-900  cursor-pointer">
+      <ul
+        onClick={() => dispatch(getUsersPostsReducer(userId))}
+        className="h-full w-full flex justify-center items-center font-semibold text-slate-300 transition  hover:bg-slate-900  cursor-pointer"
+      >
         <li className="h-full relative flex items-center">Posts</li>
       </ul>
-      <ul className="h-full w-full flex justify-center items-center font-semibold text-slate-300 transition hover:bg-slate-900  cursor-pointer">
+      <ul
+        onClick={() => dispatch(getUsersRepliedPostsReducer(userId))}
+        className="h-full w-full flex justify-center items-center font-semibold text-slate-300 transition hover:bg-slate-900  cursor-pointer"
+      >
         <li className="h-full relative flex items-center">Replies</li>
       </ul>
-      <ul className="h-full w-full flex justify-center items-center font-semibold text-slate-300 transition hover:bg-slate-900  cursor-pointer">
+      <ul
+        onClick={() => dispatch(getUsersLikedPostsReducer(userId))}
+        className="h-full w-full flex justify-center items-center font-semibold text-slate-300 transition hover:bg-slate-900  cursor-pointer"
+      >
         <li className="h-full relative flex items-center">Likes</li>
       </ul>
     </div>

@@ -3,11 +3,18 @@ import { BsThreeDots } from "react-icons/bs";
 import { MdBookmark } from "react-icons/md";
 import { IoHeart } from "react-icons/io5";
 import { BiSolidComment } from "react-icons/bi";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, MenuButton, MenuList, MenuItem, Avatar } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { toggleBookmarkAPI } from "../service/allAPI";
+import {
+  getUserAPI,
+  likeOrUnlikePostAPI,
+  toggleBookmarkAPI,
+} from "../service/allAPI";
 import { SERVER_URL } from "../service/serverURL";
+import { reqHeaderHelper } from "../utils/reqHeaderHelper";
+import { useDispatch } from "react-redux";
+import { getAllPostsReducer } from "../redux/allPostsSlice";
 
 Post.propTypes = {
   post: PropTypes.any,
@@ -15,9 +22,11 @@ Post.propTypes = {
 };
 
 export function Post({ post, comment }) {
-  const naviage = useNavigate();
+  const navigate = useNavigate();
   const [isBookmarked, setIsBookmarked] = useState(null);
   const [bookmark, setBookmark] = useState(null);
+  const [currentUser, setCurrentUser] = useState({});
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (bookmark) {
@@ -27,11 +36,33 @@ export function Post({ post, comment }) {
         setIsBookmarked(false);
       }
     }
+
+    const getUser = async () => {
+      const token = sessionStorage.getItem("token");
+      const { _id } = JSON.parse(sessionStorage.getItem("user"));
+
+      if (token) {
+        const reqHeader = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        };
+
+        const result = await getUserAPI(_id, reqHeader);
+
+        if (result.status === 200) {
+          setCurrentUser(result.data);
+        } else {
+          console.log(result.response.data);
+        }
+      }
+    };
+
+    getUser();
   }, [bookmark]);
 
   const handleNavigate = () => {
     if (!comment) {
-      naviage(`/post/${post?._id}`);
+      navigate(`/post/${post?._id}`);
     }
   };
 
@@ -58,6 +89,18 @@ export function Post({ post, comment }) {
     }
   };
 
+  const handleLikeOrUnlike = async () => {
+    const reqHeader = reqHeaderHelper();
+
+    const result = await likeOrUnlikePostAPI(post?._id, reqHeader);
+
+    if (result.status === 201) {
+      dispatch(getAllPostsReducer());
+    } else {
+      console.log("liked", result.data);
+    }
+  };
+
   return (
     <div className="flex gap-4 items-start p-4 border-b-2 border-slate-900">
       <Avatar
@@ -70,7 +113,11 @@ export function Post({ post, comment }) {
       />
       <div className="flex flex-col flex-grow flex-shrink gap-4">
         <div className="flex gap-1 ">
-          <p className="text-sm md:text-md font-semibold">{post?.user?.name}</p>
+          <Link to={`/profile/${post?.user?._id}`}>
+            <p className="text-sm md:text-md font-semibold">
+              {post?.user?.name}
+            </p>
+          </Link>
           <p className="text-sm md:text-md font-normal text-slate-500">
             @{post?.user?.username}
           </p>
@@ -86,13 +133,22 @@ export function Post({ post, comment }) {
                 <BsThreeDots />
               </MenuButton>
               <MenuList className="bg-slate-800 text-slate-300">
-                <MenuItem>view post</MenuItem>
-                <MenuItem>view user</MenuItem>
+                <MenuItem onClick={() => navigate(`/post/${post?._id}`)}>
+                  view post
+                </MenuItem>
+                <MenuItem
+                  onClick={() => navigate(`/profile/${post?.user?._id}`)}
+                >
+                  view user
+                </MenuItem>
               </MenuList>
             </Menu>
           </div>
         </div>
-        <div onClick={handleNavigate} className="flex flex-col gap-4">
+        <div
+          onClick={handleNavigate}
+          className="flex flex-col p-4 gap-4 border-2 rounded-xl border-slate-800"
+        >
           <span
             role="textbox"
             contentEditable="false"
@@ -110,9 +166,18 @@ export function Post({ post, comment }) {
         </div>
 
         <div className="flex justify-between py-2  text-slate-500">
-          <div className=" cursor-pointer flex items-center gap-2">
-            <IoHeart className="text-lg" />
-            <p className="text-xs text-slate-600">23</p>
+          <div
+            onClick={handleLikeOrUnlike}
+            className=" cursor-pointer flex items-center gap-2"
+          >
+            <IoHeart
+              className={`${
+                post?.postLikes?.includes(currentUser?._id) && "text-red-700 "
+              } text-lg`}
+            />
+            <p className="text-xs text-red-700">
+              {post?.postLikes?.length > 0 ? post?.postLikes?.length : ""}
+            </p>
           </div>
           {comment || (
             <div
@@ -120,7 +185,11 @@ export function Post({ post, comment }) {
               className=" cursor-pointer flex items-center gap-2"
             >
               <BiSolidComment className="text-lg" />
-              <p className="text-xs text-slate-600">23</p>
+              <p className="text-xs text-slate-600">
+                {post?.postComments?.length > 0
+                  ? post?.postComments?.length
+                  : ""}
+              </p>
             </div>
           )}
           <div
@@ -128,7 +197,9 @@ export function Post({ post, comment }) {
             className=" cursor-pointer flex items-center gap-2"
           >
             <MdBookmark
-              className={`${isBookmarked && "text-yellow-100"} text-lg`}
+              className={`${
+                currentUser?.bookmark?.includes(post?._id) && "text-yellow-500"
+              } text-lg`}
             />
           </div>
         </div>

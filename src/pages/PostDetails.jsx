@@ -8,9 +8,11 @@ import { Post } from "../components/Post";
 import { LeftSidebar } from "../components/LeftSidebar";
 import { RightSidebar } from "../components/RightSidebar";
 import { useParams } from "react-router-dom";
-import { getPostAPI } from "../service/allAPI";
+import { addCommentToPostAPI, getPostAPI } from "../service/allAPI";
 import { Avatar } from "@chakra-ui/react";
 import { SERVER_URL } from "../service/serverURL";
+import { reqHeaderHelper } from "../utils/reqHeaderHelper";
+import { Comment } from "../components/Comment";
 
 PostDetails.propTypes = {};
 
@@ -18,7 +20,6 @@ export function PostDetails() {
   const textRef = useRef(null);
   const [comment, setComment] = useState({
     commentText: "",
-    commentImage: "",
   });
   const [imagePreview, setImagePreview] = useState("");
   const { id } = useParams();
@@ -36,19 +37,6 @@ export function PostDetails() {
       setUser(user);
     }
   };
-
-  useEffect(() => {
-    if (
-      comment.commentImage.type == "image/png" ||
-      comment.commentImage.type == "image/jpg" ||
-      comment.commentImage.type == "image/jpeg"
-    ) {
-      setImagePreview(URL.createObjectURL(comment.commentImage));
-    } else {
-      setComment({ ...comment, commentImage: "" });
-      setImagePreview("");
-    }
-  }, [comment.commentImage]);
 
   const getPost = async () => {
     const token = sessionStorage.getItem("token");
@@ -76,10 +64,21 @@ export function PostDetails() {
     setComment({ ...comment, commentText: textarea.value });
   };
 
-  const handleCreatPost = () => {
-    console.log("Button is working");
-    if (comment.commentImage || comment.commentText) {
-      console.log(comment);
+  const handleCreateComment = async () => {
+    if (!comment.commentText) {
+      return;
+    }
+    const { commentText } = comment;
+    const reqHeader = reqHeaderHelper("application/json");
+    const reqBody = { commentText };
+
+    const result = await addCommentToPostAPI(id, reqHeader, reqBody);
+
+    if (result.status === 201) {
+      getPost();
+      handleClear();
+    } else {
+      console.log("Error", result.response.data);
     }
   };
 
@@ -114,7 +113,7 @@ export function PostDetails() {
               value={comment.commentText}
               onChange={(e) => handleKeyUp(e)}
               autoCorrect="false"
-              placeholder="Post your Replay..."
+              placeholder="Add Comment..."
             ></textarea>
             {imagePreview && (
               <div className="py-2 relative">
@@ -128,17 +127,17 @@ export function PostDetails() {
               </div>
             )}
             <div className="flex gap-4 w-full border-t-2 border-slate-900 py-3">
-              <label className="p-3 rounded-full hover:bg-slate-900 transition cursor-pointer">
-                <input
-                  type="file"
-                  className="hidden"
-                  onChange={(e) =>
-                    setComment({ ...comment, commentImage: e.target.files[0] })
-                  }
-                />
-                <LuImagePlus className="text-xl" />
-              </label>
-              {(comment.commentText || comment.commentImage) && (
+              {/* <label className="p-3 rounded-full hover:bg-slate-900 transition cursor-pointer"> */}
+              {/*   <input */}
+              {/*     type="file" */}
+              {/*     className="hidden" */}
+              {/*     onChange={(e) => */}
+              {/*       setComment({ ...comment, commentImage: e.target.files[0] }) */}
+              {/*     } */}
+              {/*   /> */}
+              {/*   <LuImagePlus className="text-xl" /> */}
+              {/* </label> */}
+              {comment.commentText && (
                 <div
                   onClick={handleClear}
                   className=" p-3 rounded-full cursor-pointer hover:bg-slate-800 transition ml-auto"
@@ -147,7 +146,7 @@ export function PostDetails() {
                 </div>
               )}
               <Button
-                buttonClick={handleCreatPost}
+                buttonClick={handleCreateComment}
                 classes={`${
                   comment.commentText || comment.commentImage || "ml-auto"
                 } py-px`}
@@ -158,6 +157,13 @@ export function PostDetails() {
           </div>
         </div>
         {/* <Post post={{ ...comment, postImage: imagePreview }} comment /> */}
+        {post?.postComments?.length > 0
+          ? [...post.postComments]
+              .reverse()
+              .map((comment, index) => (
+                <Comment comment={comment} key={index} />
+              ))
+          : null}
       </div>
       <RightSidebar />
     </>

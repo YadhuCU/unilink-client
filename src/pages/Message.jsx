@@ -3,9 +3,7 @@ import { LeftSidebar } from "../components/LeftSidebar";
 import { Navbar } from "../components/Navbar";
 import { CiSearch } from "react-icons/ci";
 import { IoArrowBack } from "react-icons/io5";
-import { useState, useEffect } from "react";
 import { BsThreeDots } from "react-icons/bs";
-import { useRef } from "react";
 import { Button } from "../components/utils/Button";
 import { Chat } from "../components/Chat";
 import {
@@ -17,12 +15,32 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  Avatar,
 } from "@chakra-ui/react";
+import { SERVER_URL } from "../service/serverURL";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useRef } from "react";
+import {
+  getAllConversationsAPI,
+  getAllUserAPI,
+  sendMessageAPI,
+} from "../service/allAPI";
+import { reqHeaderHelper } from "../utils/reqHeaderHelper";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addCurrentChatUserReducer,
+  getAllConversationsReducer,
+} from "../redux/messageSlice";
 
 Message.propTypes = {};
 ChatPeople.propTypes = {
   onClick: PropTypes.func,
+  user: PropTypes.object,
+};
+Conversation.propTypes = {
+  onClick: PropTypes.func,
+  conversation: PropTypes.object,
 };
 
 export function Message() {
@@ -31,13 +49,54 @@ export function Message() {
   const [showChat, setShowChat] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
+  const [allUsers, setAllUsers] = useState([]);
+  const dispatch = useDispatch();
+  const { allConversation } = useSelector((state) => state.messageSlice);
 
-  const handlActive = (e) => {
+  useEffect(() => {
+    getAllUsers();
+  }, [search]);
+
+  useEffect(() => {
+    dispatch(getAllConversationsReducer());
+  }, []);
+
+  const getAllUsers = async () => {
+    const reqHeader = reqHeaderHelper();
+
+    if (reqHeader) {
+      const result = await getAllUserAPI(search, reqHeader);
+      if (result.status === 200) {
+        setAllUsers(result.data);
+      } else {
+        console.log("Error", result);
+      }
+    }
+  };
+
+  const handlActiveAndAddConversation = ({ e, id }) => {
     const childNodes = parentOfChatPeople.current.childNodes;
     childNodes.forEach((item) => item.classList.remove("chat-active"));
     e.target.closest(".chat-people").classList.add("chat-active");
-
     setShowChat(true);
+    onClose();
+    dispatch(addCurrentChatUserReducer(id));
+  };
+
+  const createConversation = async (id) => {
+    const reqHeader = reqHeaderHelper("application/json");
+    const reqBody = {
+      receiverId: id,
+      message: "",
+    };
+
+    dispatch(addCurrentChatUserReducer(id));
+    const result = await sendMessageAPI(reqHeader, reqBody);
+    if (result.status === 201) {
+      dispatch(getAllConversationsReducer());
+      setShowChat(true);
+      onClose();
+    }
   };
 
   return (
@@ -72,9 +131,15 @@ export function Message() {
           </div>
 
           <div ref={parentOfChatPeople} className="w-full py-4 ">
-            {new Array(4).fill(4).map((_, id) => (
-              <ChatPeople onClick={handlActive} key={id} />
-            ))}
+            {allConversation?.length > 0
+              ? allConversation?.map((conversation, index) => (
+                  <Conversation
+                    conversation={conversation}
+                    onClick={handlActiveAndAddConversation}
+                    key={index}
+                  />
+                ))
+              : null}
           </div>
         </div>
         {/* show chat  */}
@@ -103,7 +168,7 @@ export function Message() {
       <Modal isOpen={isOpen} size={"xl"} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Edit Profile</ModalHeader>
+          <ModalHeader>Search Friends.</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <label className="flex w-full px-4 border-3 border-slate-500 py-2 gap-2 rounded-full items-center transition-all">
@@ -116,7 +181,15 @@ export function Message() {
                 className="bg-transparent border-0 outline-none w-full"
               />
             </label>
-            <ChatPeople onClick={handlActive} />
+            {allUsers?.length > 0
+              ? allUsers?.map((user, index) => (
+                  <ChatPeople
+                    key={index}
+                    user={user}
+                    onClick={createConversation}
+                  />
+                ))
+              : null}
           </ModalBody>
 
           <ModalFooter>
@@ -130,21 +203,63 @@ export function Message() {
   );
 }
 
-function ChatPeople({ onClick }) {
+function ChatPeople({ onClick, user }) {
   return (
-    <div className="chat-people flex px-2 py-4  items-center} hover:bg-slate-900">
-      <div onClick={onClick} className="flex gap-3 flex-grow">
-        <img
-          className="w-[50px] h-[50px] object-cover rounded-full"
-          src="https://source.unsplash.com/random"
+    <div className="chat-people flex px-2 py-4  items-center hover:bg-slate-900">
+      <div onClick={() => onClick(user?._id)} className="flex gap-3 flex-grow">
+        <Avatar
+          name={user?.name}
+          src={
+            (user?.profilePicture &&
+              `${SERVER_URL}/user-image/${user?.profilePicture}`) ||
+            user?.googlePicture
+          }
         />
         <div className="flex flex-col gap-1">
           <p className="text-md font-semibold  ">
-            Yadhu{" "}
-            <span className="text-sm font-light text-slate-500 ">@yadhu</span>
+            {user?.name}{" "}
+            <span className="text-sm font-light text-slate-500 ">
+              @ {user?.username}
+            </span>
           </p>
           <p className="text-sm font-light text-slate-500 leading-3 ">
             message
+          </p>
+        </div>
+      </div>
+      <div className="">
+        <div className="settings p-2 opacity-0 ml-auto rounded-full hover:bg-slate-800 transition cursor-pointer">
+          <BsThreeDots />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Conversation({ onClick, conversation }) {
+  return (
+    <div className="chat-people flex px-2 py-4  items-center hover:bg-slate-900">
+      <div
+        onClick={(e) => onClick({ e, id: conversation?.members[0]?._id })}
+        className="flex gap-3 flex-grow"
+      >
+        <Avatar
+          name={conversation?.members[0]?.name}
+          src={
+            (conversation?.members[0]?.profilePicture &&
+              `${SERVER_URL}/user-image/${conversation?.members[0]?.profilePicture}`) ||
+            conversation?.members[0]?.googlePicture
+          }
+        />
+        <div className="flex flex-col gap-1">
+          <p className="text-md font-semibold  ">
+            {conversation?.members[0].name}{" "}
+            <span className="text-sm font-light text-slate-500 ">
+              @ {conversation?.members[0].username}
+            </span>
+          </p>
+          <p className="text-sm font-light text-slate-500 leading-3 ">
+            {conversation?.lastMessage?.message}
           </p>
         </div>
       </div>

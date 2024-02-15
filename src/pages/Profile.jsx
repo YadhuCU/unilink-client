@@ -7,7 +7,6 @@ import { BsCalendar2DateFill } from "react-icons/bs";
 import { FaBirthdayCake } from "react-icons/fa";
 import { MdPlace } from "react-icons/md";
 import { Post } from "../components/Post";
-import { dummyPost } from "../service/dummy";
 import {
   Modal,
   ModalOverlay,
@@ -23,11 +22,17 @@ import { useState, useEffect } from "react";
 import { FaCamera } from "react-icons/fa";
 import { SERVER_URL } from "../service/serverURL";
 import { useToast } from "@chakra-ui/react";
-import { getUserAPI, updateProfileAPI } from "../service/allAPI";
+import {
+  getUserAPI,
+  updateProfileAPI,
+  getUserPostsAPI,
+} from "../service/allAPI";
 import { useDispatch, useSelector } from "react-redux";
 import { updateCurrentUserReducer } from "../redux/userProfileSlice";
 import { dateFormatter } from "../utils/dateFormatter";
 import { useParams } from "react-router-dom";
+import { reqHeaderHelper } from "../utils/reqHeaderHelper";
+import { getUsersPostsReducer } from "../redux/allPostsSlice";
 
 Profile.propTypes = {};
 
@@ -42,10 +47,15 @@ export function Profile() {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.userProfileSlice);
   const { userId } = useParams();
+  const { allPosts, loading } = useSelector((state) => state.allPostsSlice);
+
+  // useEffect(() => {
+  //   dispatch(getUsersPostsReducer(userId));
+  // }, []);
 
   useEffect(() => {
     getCurrentUser();
-  }, [currentUser, userId]);
+  }, [userId]);
 
   const getCurrentUser = async () => {
     const token = sessionStorage.getItem("token");
@@ -139,6 +149,17 @@ export function Profile() {
     }
   };
 
+  const getUserPosts = async () => {
+    const reqHeader = reqHeaderHelper();
+
+    if (reqHeader) {
+      const result = await getUserPostsAPI(userId, reqHeader);
+
+      if (result.status === 200) {
+      }
+    }
+  };
+
   return (
     <>
       <LeftSidebar />
@@ -228,9 +249,8 @@ export function Profile() {
           </div>
         </div>
         <Navbar insideProfileDetail />
-        {dummyPost.map((item, index) => (
-          <Post post={item} key={index} />
-        ))}
+        {allPosts.length > 0 &&
+          allPosts.map((item, index) => <Post post={item} key={index} />)}
       </div>
       <RightSidebar />
 

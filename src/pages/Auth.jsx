@@ -10,6 +10,8 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { loginAPI, registerAPI } from "../service/allAPI";
 import { useToast } from "@chakra-ui/react";
+import { useDispatch } from "react-redux";
+import { updateCurrentUserReducer } from "../redux/userProfileSlice";
 
 Auth.propTypes = {
   signup: PropTypes.bool,
@@ -30,6 +32,7 @@ export function Auth({ signup }) {
   const [googleUser, setGoogleUser] = useState(null);
   const navigate = useNavigate();
   const toast = useToast();
+  const dispatch = useDispatch();
 
   // google oauth
   useEffect(() => {
@@ -62,16 +65,19 @@ export function Auth({ signup }) {
   };
 
   // login
-  const handleLogin = async (registeredUserData) => {
+  const handleLogin = async ({ googleUserData }) => {
     const data = {
-      email: registeredUserData.email || userData.email,
-      password: registeredUserData.password || userData.password,
+      email: googleUserData ? googleUserData.email : userData.email,
+      password: googleUserData ? googleUserData.password : userData.password,
     };
 
     const result = await loginAPI(data);
+
     if (result.status === 201) {
       sessionStorage.setItem("user", JSON.stringify(result.data.user, null, 4));
       sessionStorage.setItem("token", result.data.token);
+      dispatch(updateCurrentUserReducer(result.data.user));
+
       navigate("/home");
     } else {
       toast({
@@ -87,16 +93,21 @@ export function Auth({ signup }) {
   };
 
   // register
-  const handleSignup = async (google, googleUserData) => {
-    const data = googleUserData || userData;
+  const handleSignup = async (prop) => {
+    const { google, googleUserData } = prop;
+    const data = google ? googleUserData : userData;
+
+    console.log("handleSignup", data);
 
     const result = await registerAPI(data);
+
+    console.log("result", result);
 
     if (result.status === 201) {
       handleLogin(result.data);
     } else {
       if (google) {
-        handleLogin(googleUserData);
+        handleLogin({ googleUserData: data });
       } else {
         toast({
           title: "Error",
@@ -121,6 +132,8 @@ export function Auth({ signup }) {
     const username = email.split("@")[0];
     const google = true;
 
+    console.log("signupWithGoogle", name, email, username);
+
     setUserData({
       email,
       name,
@@ -136,11 +149,8 @@ export function Auth({ signup }) {
       username,
       googlePicture: picture,
     };
-    handleSignup(google, newUserData);
-  };
 
-  const logout = () => {
-    googleLogout();
+    handleSignup({ google, googleUserData: newUserData });
   };
 
   const clearState = () => {
@@ -287,7 +297,7 @@ export function Auth({ signup }) {
                 ? "cursor-pointer "
                 : "cursor-not-allowed bg-[var(--clr-blue-medium-50)] text-slate-500"
             } animation w-ful lpx-5 py-4 bg-[var(--clr-blue-medium)] rounded-[var(--br)] tracking-widest`}
-            onClick={handleSignup}
+            onClick={(e) => handleSignup(e)}
           >
             Sign Up
           </button>

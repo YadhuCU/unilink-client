@@ -7,7 +7,7 @@ import { FaTrash } from "react-icons/fa";
 import { Post } from "../components/Post";
 import { LeftSidebar } from "../components/LeftSidebar";
 import { RightSidebar } from "../components/RightSidebar";
-import { Avatar } from "@chakra-ui/react";
+import { Avatar, Skeleton, Stack } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import {
   createPostAPI,

@@ -234,7 +234,9 @@ export function LeftSidebar({ insideHome }) {
               </MenuButton>
               <MenuList className="bg-slate-800 text-slate-300">
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                <MenuItem>Profile</MenuItem>
+                <MenuItem onClick={() => navigate(`/profile/${user?._id}`)}>
+                  Profile
+                </MenuItem>
               </MenuList>
             </Menu>
           </div>
