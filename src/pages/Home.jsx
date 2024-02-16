@@ -7,13 +7,8 @@ import { FaTrash } from "react-icons/fa";
 import { Post } from "../components/Post";
 import { LeftSidebar } from "../components/LeftSidebar";
 import { RightSidebar } from "../components/RightSidebar";
-import { Avatar, Skeleton, Stack } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
-import {
-  createPostAPI,
-  getAllPostAPI,
-  getFollowingUsersPostsAPI,
-} from "../service/allAPI.js";
+import { Avatar } from "@chakra-ui/react";
+import { createPostAPI } from "../service/allAPI.js";
 import { useToast } from "@chakra-ui/react";
 import { SERVER_URL } from "../service/serverURL.js";
 import { useDispatch, useSelector } from "react-redux";
@@ -54,36 +49,6 @@ export function Home() {
       setImagePreview("");
     }
   }, [post.postImage]);
-
-  // const getAllPosts = async () => {
-  //   const token = sessionStorage.getItem("token");
-  //   if (token) {
-  //     const reqHeader = {
-  //       "Content-Type": "application/json",
-  //       Authorization: `Bearer ${token}`,
-  //     };
-  //
-  //     const result = await getAllPostAPI(reqHeader);
-  //     if (result.status === 200) {
-  //       setAllPosts(result.data);
-  //     } else {
-  //       console.log("error", result.response.data);
-  //     }
-  //   }
-  // };
-
-  // const getFollowingUsersPosts = async () => {
-  //   const token = sessionStorage.getItem("token");
-  //   if (token) {
-  //     const reqHeader = {
-  //       "Content-Type": "application/json",
-  //       Authorization: `Bearer ${token}`,
-  //     };
-  //
-  //     const result = await getFollowingUsersPostsAPI(reqHeader);
-  //     console.log("result->", result);
-  //   }
-  // };
 
   const handleKeyUp = () => {
     const textarea = textRef.current;

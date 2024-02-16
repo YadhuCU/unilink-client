@@ -115,7 +115,6 @@ export function LeftSidebar({ insideHome }) {
           Authorization: `Bearer ${token}`,
         };
         const result = await createPostAPI(reqHeader, post);
-        console.log("result", result);
         if (result.status === 201) {
           toast({
             title: "Success",

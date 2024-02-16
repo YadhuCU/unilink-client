@@ -19,9 +19,6 @@ export function Bookmark() {
     const token = sessionStorage.getItem("token");
     const { _id } = JSON.parse(sessionStorage.getItem("user"));
 
-    console.log("token", token);
-    console.log("_id", _id);
-
     if (token) {
       const reqHeader = {
         "Content-Type": "application/json",
@@ -31,7 +28,6 @@ export function Bookmark() {
       const result = await getBookmarkPostsAPI(_id, reqHeader);
 
       if (result.status === 200) {
-        console.log("result-bookmark", result);
         setBookmarkedPosts(result.data);
       } else {
         console.log("Error", result.response.data);

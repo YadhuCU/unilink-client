@@ -32,7 +32,6 @@ import { updateCurrentUserReducer } from "../redux/userProfileSlice";
 import { dateFormatter } from "../utils/dateFormatter";
 import { useParams } from "react-router-dom";
 import { reqHeaderHelper } from "../utils/reqHeaderHelper";
-import { getUsersPostsReducer } from "../redux/allPostsSlice";
 
 Profile.propTypes = {};
 
@@ -136,7 +135,6 @@ export function Profile() {
   };
 
   const handleCancelEditProfile = () => {
-    console.log("inside handleEditProfile");
     onClose();
   };
 

@@ -14,8 +14,6 @@ Comment.propTypes = {
 export function Comment({ comment }) {
   const navigate = useNavigate();
 
-  console.log("comment", comment);
-
   return (
     <div className="flex gap-4 items-start p-4 border-b-2 border-slate-900">
       <Avatar

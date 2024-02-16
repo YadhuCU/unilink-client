@@ -64,7 +64,6 @@ export function RightSidebar() {
         Authorization: `Bearer ${token}`,
       };
       const result = await followUnfollowUserAPI(followerId, reqHeader);
-      console.log("result", result);
       if (result.status === 200) {
         getAllUsers();
       } else {

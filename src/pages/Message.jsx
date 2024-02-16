@@ -51,7 +51,6 @@ export function Message() {
   const parentOfChatPeople = useRef(null);
   const [showChat, setShowChat] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const navigate = useNavigate();
   const [allUsers, setAllUsers] = useState([]);
   const dispatch = useDispatch();
   const { allConversation, activeUsers } = useSelector(
@@ -61,7 +60,6 @@ export function Message() {
 
   useEffect(() => {
     socket.on("add-message", (message) => {
-      console.log("Message", message);
       dispatch(getAllConversationsReducer());
       dispatch(getMessageReducer(message?.sender));
       dispatch(updateLatesteMessage(message));

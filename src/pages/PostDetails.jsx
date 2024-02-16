@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
 import { Navbar } from "../components/Navbar";
-import { LuImagePlus } from "react-icons/lu";
 import { Button } from "../components/utils/Button";
 import { useRef, useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";

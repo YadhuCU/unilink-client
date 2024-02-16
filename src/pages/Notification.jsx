@@ -9,8 +9,6 @@ import { useNavigate } from "react-router-dom";
 Notification.propTypes = {};
 
 export function Notification() {
-  const navigate = useNavigate();
-
   return (
     <>
       <LeftSidebar />
