@@ -156,6 +156,7 @@ export function Profile() {
       const result = await getUserPostsAPI(userId, reqHeader);
 
       if (result.status === 200) {
+        console.log("userPost");
       }
     }
   };

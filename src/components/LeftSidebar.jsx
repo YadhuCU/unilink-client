@@ -28,6 +28,7 @@ import { useToast } from "@chakra-ui/react";
 import { SERVER_URL } from "../service/serverURL";
 import { useSelector, useDispatch } from "react-redux";
 import { updateAuthentication } from "../redux/userProfileSlice";
+import { getAllPostsReducer } from "../redux/allPostsSlice";
 
 LeftSidebar.propTypes = {
   insideHome: PropTypes.bool,
@@ -126,6 +127,7 @@ export function LeftSidebar({ insideHome }) {
           });
           onClose();
           handleClear();
+          dispatch(getAllPostsReducer());
         } else {
           toast({
             title: "Error",
@@ -175,12 +177,12 @@ export function LeftSidebar({ insideHome }) {
               <div className="text-2xl hidden md:block">Home</div>
             </li>
           </Link>
-          <Link to="/notification">
-            <li className="notification flex gap-4 items-center px-5 py-3 rounded-full hover:bg-slate-900 transition cursor-pointer">
-              <IoMdNotifications className="text-3xl" />
-              <div className="text-2xl hidden md:block">Notification</div>
-            </li>
-          </Link>
+          {/* <Link to="/notification"> */}
+          {/*   <li className="notification flex gap-4 items-center px-5 py-3 rounded-full hover:bg-slate-900 transition cursor-pointer"> */}
+          {/*     <IoMdNotifications className="text-3xl" /> */}
+          {/*     <div className="text-2xl hidden md:block">Notification</div> */}
+          {/*   </li> */}
+          {/* </Link> */}
           <Link to="/bookmark">
             <li className="bookmark flex gap-4 items-center px-5 py-3 rounded-full hover:bg-slate-900 transition cursor-pointer">
               <HiBookmark className="text-3xl" />

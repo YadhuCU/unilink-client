@@ -111,7 +111,7 @@ export function Auth({ signup }) {
     const result = await registerAPI(data);
 
     if (result.status === 201) {
-      handleLogin(result.data);
+      handleLogin({ googleUserData: result.data });
     } else {
       if (google) {
         handleLogin({ googleUserData: data });

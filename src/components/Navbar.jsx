@@ -148,11 +148,28 @@ function NotificationNavbar() {
 }
 
 function ProfileNavbar() {
+  const { userId } = useParams();
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    getUser();
+  }, [userId]);
+
+  const getUser = async () => {
+    const reqHeader = reqHeaderHelper("application/json");
+    const result = await getUserAPI(userId, reqHeader);
+    if (result.status === 200) {
+      setUser(result.data);
+    } else {
+      console.error("Error", result.response.data);
+    }
+  };
+
   return (
     <div className="w-full px-5 py-2 flex items-start border-b-2 border-slate-900">
       <div className="flex flex-col">
-        <h3 className="text-xl font-bold text-slate-100">Yadhukrisna CU</h3>
-        <p className="text-md text-slate-500">4 posts</p>
+        <h3 className="text-xl font-bold text-slate-100">{user?.name}</h3>
+        <p className="text-md text-slate-500">{user?.post} posts</p>
       </div>
     </div>
   );

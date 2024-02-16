@@ -17,6 +17,7 @@ import {
 import { useToast } from "@chakra-ui/react";
 import { SERVER_URL } from "../service/serverURL.js";
 import { useDispatch, useSelector } from "react-redux";
+import { getAllPostsReducer } from "../redux/allPostsSlice.js";
 
 Home.propTypes = {};
 
@@ -30,6 +31,7 @@ export function Home() {
   const [user, setUser] = useState(null);
   const toast = useToast();
   const { allPosts, loading } = useSelector((state) => state.allPostsSlice);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     getUsereFromSession();
@@ -109,6 +111,7 @@ export function Home() {
             position: "top",
           });
           handleClear();
+          dispatch(getAllPostsReducer());
         } else {
           toast({
             title: "Error",
