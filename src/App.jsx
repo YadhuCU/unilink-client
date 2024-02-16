@@ -8,16 +8,34 @@ import { Profile } from "./pages/Profile";
 import { Notification } from "./pages/Notification";
 import { PostDetails } from "./pages/PostDetails";
 import { useState, useEffect } from "react";
+import io from "socket.io-client";
+import { SERVER_URL } from "./service/serverURL";
+import { useSelector, useDispatch } from "react-redux";
+import { addSocketReducer } from "./redux/socketSlice";
+import { updateActiveUsers } from "./redux/messageSlice";
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { currentUser, isAuthenticated } = useSelector(
+    (state) => state.userProfileSlice,
+  );
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
+    const socket = io(SERVER_URL, {
+      query: {
+        userId: currentUser?._id,
+      },
+    });
+    dispatch(addSocketReducer(socket));
 
-    if (token) setIsAuthenticated(true);
-    else setIsAuthenticated(false);
-  }, []);
+    socket.on("get-user-status", (onlineUsers) => {
+      dispatch(updateActiveUsers(onlineUsers));
+    });
+
+    return () => {
+      socket.off("get-user-status");
+    };
+  }, [currentUser]);
 
   return (
     <div className="w-full overflow-hidden h-[100dvh] bg-slate-950 text-slate-300 ">

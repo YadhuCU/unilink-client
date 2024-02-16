@@ -22,7 +22,7 @@ export function Comment({ comment }) {
         name={comment?.commentAuthorName}
         src={
           (comment?.commentAuthorProfilePicture &&
-            `${SERVER_URL}/user-image/${comment?.user?.profilePicture}`) ||
+            `${SERVER_URL}/user-image/${comment?.commentAuthorProfilePicture}`) ||
           comment?.commentAuthorGooglePicture
         }
       />

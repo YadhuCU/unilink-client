@@ -3,9 +3,15 @@ import { Navbar } from "./Navbar";
 import { IoSend } from "react-icons/io5";
 import { useState, useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getMessageReducer } from "../redux/messageSlice";
-import { sendMessageAPI } from "../service/allAPI";
+import {
+  getAllConversationsReducer,
+  getMessageReducer,
+} from "../redux/messageSlice";
+import { getUserAPI, sendMessageAPI } from "../service/allAPI";
 import { reqHeaderHelper } from "../utils/reqHeaderHelper";
+import { Avatar } from "@chakra-ui/react";
+import { SERVER_URL } from "../service/serverURL";
+import { dateFormatterForChat } from "../utils/dateFormatter";
 
 Chat.propTypes = {};
 
@@ -14,10 +20,10 @@ export function Chat() {
   const { currentChatUser, currentChat } = useSelector(
     (state) => state.messageSlice,
   );
-  const { currentUser } = useSelector((state) => state.userProfileSlice);
   const dispatch = useDispatch();
   const [user, setUser] = useState({});
   const lastMessageRef = useRef(null);
+  const [chatUserProfile, setChatUserProfile] = useState({});
 
   useEffect(() => {
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -31,12 +37,28 @@ export function Chat() {
   }, [currentChat]);
 
   useEffect(() => {
+    getChatUserProfile();
     getMessages();
   }, [currentChatUser]);
 
   const getMessages = async () => {
     if (currentChatUser) {
       dispatch(getMessageReducer(currentChatUser));
+      dispatch(getAllConversationsReducer());
+    }
+  };
+
+  const getChatUserProfile = async () => {
+    if (currentChatUser) {
+      const reqHeader = reqHeaderHelper("application/json");
+
+      const result = await getUserAPI(currentChatUser, reqHeader);
+
+      if (result.status === 200) {
+        setChatUserProfile(result.data);
+      } else {
+        console.error("Error", result.response.data);
+      }
     }
   };
 
@@ -64,20 +86,37 @@ export function Chat() {
         <div className="sticky top-0 z-50 backdrop-blur-md">
           <Navbar insideChat />
         </div>
-        <div className="w-full flex flex-col items-center gap-2 px-2 py-8 my-4 hover:bg-slate-900 transition-colors">
-          <img
-            className="object-cover w-[150px] h-[150px] rounded-full"
-            src="https://source.unsplash.com/random"
+        <div className="w-full flex flex-col items-center gap-2 px-2 py-8 my-4 border-b-4 border-slate-900 hover:bg-slate-900 transition-colors">
+          <Avatar
+            size="2xl"
+            name={chatUserProfile?.name}
+            src={
+              chatUserProfile?.profilePicture
+                ? `${SERVER_URL}/user-image/${chatUserProfile?.profilePicture}`
+                : chatUserProfile?.googlePicture
+            }
           />
-          <h5 className="text-2xl font-bold ">Yadhu</h5>
-          <h4 className="text-xl font-light leading-3">@yadhu</h4>
+          <h5 className="text-2xl font-bold ">{chatUserProfile?.name}</h5>
+          <h4 className="text-xl font-light leading-3">
+            @{chatUserProfile?.username}
+          </h4>
         </div>
         {currentChat?.length > 0 &&
           currentChat?.map((chat, index) => {
-            if (chat?.sender === user._id) {
-              return <Me reference={lastMessageRef} chat={chat} key={index} />;
-            } else {
-              return <You reference={lastMessageRef} chat={chat} key={index} />;
+            if (chat.message) {
+              chat = {
+                ...chat,
+                createdAt: dateFormatterForChat(chat.createdAt),
+              };
+              if (chat?.sender === user._id) {
+                return (
+                  <Me reference={lastMessageRef} chat={chat} key={index} />
+                );
+              } else {
+                return (
+                  <You reference={lastMessageRef} chat={chat} key={index} />
+                );
+              }
             }
           })}
       </div>

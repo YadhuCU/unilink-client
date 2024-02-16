@@ -9,3 +9,16 @@ export function dateFormatter(date) {
 
   return formattedDate;
 }
+
+export function dateFormatterForChat(date) {
+  const dateObject = new Date(date);
+  const options = {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+    timeZone: "UTC", // Adjust the timeZone according to your requirement
+  };
+
+  const formattedTime = dateObject.toLocaleTimeString("en-US", options);
+  return formattedTime;
+}

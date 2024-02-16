@@ -26,7 +26,8 @@ import { Avatar } from "@chakra-ui/react";
 import { createPostAPI } from "../service/allAPI";
 import { useToast } from "@chakra-ui/react";
 import { SERVER_URL } from "../service/serverURL";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { updateAuthentication } from "../redux/userProfileSlice";
 
 LeftSidebar.propTypes = {
   insideHome: PropTypes.bool,
@@ -47,6 +48,8 @@ export function LeftSidebar({ insideHome }) {
   const [imagePreview, setImagePreview] = useState("");
   const toast = useToast();
   const { currentUser } = useSelector((state) => state.userProfileSlice);
+  const { socket } = useSelector((state) => state.socketSlice);
+  const dispatch = useDispatch();
 
   const handleOpenPost = () => {
     onOpen();
@@ -147,6 +150,8 @@ export function LeftSidebar({ insideHome }) {
     navigate("/");
     sessionStorage.setItem("user", "");
     sessionStorage.setItem("token", "");
+    dispatch(updateAuthentication(false));
+    socket.emit("logout");
   };
 
   return (

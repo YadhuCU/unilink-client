@@ -16,6 +16,7 @@ import {
   ModalCloseButton,
   useDisclosure,
   Avatar,
+  AvatarBadge,
 } from "@chakra-ui/react";
 import { SERVER_URL } from "../service/serverURL";
 import { useNavigate } from "react-router-dom";
@@ -31,6 +32,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addCurrentChatUserReducer,
   getAllConversationsReducer,
+  getMessageReducer,
+  updateLatesteMessage,
 } from "../redux/messageSlice";
 
 Message.propTypes = {};
@@ -51,7 +54,22 @@ export function Message() {
   const navigate = useNavigate();
   const [allUsers, setAllUsers] = useState([]);
   const dispatch = useDispatch();
-  const { allConversation } = useSelector((state) => state.messageSlice);
+  const { allConversation, activeUsers } = useSelector(
+    (state) => state.messageSlice,
+  );
+  const { socket } = useSelector((state) => state.socketSlice);
+
+  useEffect(() => {
+    socket.on("add-message", (message) => {
+      console.log("Message", message);
+      dispatch(getAllConversationsReducer());
+      dispatch(getMessageReducer(message?.sender));
+      dispatch(updateLatesteMessage(message));
+    });
+    return () => {
+      socket.off("add-message");
+    };
+  }, [socket]);
 
   useEffect(() => {
     getAllUsers();
@@ -132,13 +150,20 @@ export function Message() {
 
           <div ref={parentOfChatPeople} className="w-full py-4 ">
             {allConversation?.length > 0
-              ? allConversation?.map((conversation, index) => (
-                  <Conversation
-                    conversation={conversation}
-                    onClick={handlActiveAndAddConversation}
-                    key={index}
-                  />
-                ))
+              ? allConversation?.map((conversation, index) => {
+                  if (activeUsers.includes(conversation.members[0]?._id)) {
+                    conversation = { ...conversation, isOnline: true };
+                  } else {
+                    conversation = { ...conversation, isOnline: false };
+                  }
+                  return (
+                    <Conversation
+                      conversation={conversation}
+                      onClick={handlActiveAndAddConversation}
+                      key={index}
+                    />
+                  );
+                })
               : null}
           </div>
         </div>
@@ -250,7 +275,11 @@ function Conversation({ onClick, conversation }) {
               `${SERVER_URL}/user-image/${conversation?.members[0]?.profilePicture}`) ||
             conversation?.members[0]?.googlePicture
           }
-        />
+        >
+          {conversation.isOnline && (
+            <AvatarBadge boxSize="1em" borderColor="#0f172a" bg="green.500" />
+          )}
+        </Avatar>
         <div className="flex flex-col gap-1">
           <p className="text-md font-semibold  ">
             {conversation?.members[0].name}{" "}

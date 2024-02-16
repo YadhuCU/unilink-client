@@ -32,10 +32,18 @@ const messageSlice = createSlice({
     currentChat: [],
     allConversationLoading: false,
     currentChatUser: "",
+    activeUsers: [],
+    latestMessage: {},
   },
   reducers: {
     addCurrentChatUserReducer: (state, action) => {
       state.currentChatUser = action.payload;
+    },
+    updateActiveUsers: (state, action) => {
+      state.activeUsers = action.payload;
+    },
+    updateLatesteMessage: (state, action) => {
+      state.latestMessage = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -52,7 +60,6 @@ const messageSlice = createSlice({
       state.allConversationLoading = false;
     });
     builder.addCase(getMessageReducer.fulfilled, (state, action) => {
-      console.log("action.payload", action.payload);
       if (action.payload.status === 200) {
         state.currentChat = action.payload.data;
       }
@@ -61,4 +68,8 @@ const messageSlice = createSlice({
 });
 
 export default messageSlice.reducer;
-export const { addCurrentChatUserReducer } = messageSlice.actions;
+export const {
+  addCurrentChatUserReducer,
+  updateActiveUsers,
+  updateLatesteMessage,
+} = messageSlice.actions;

@@ -11,7 +11,10 @@ import { useNavigate, Link } from "react-router-dom";
 import { loginAPI, registerAPI } from "../service/allAPI";
 import { useToast } from "@chakra-ui/react";
 import { useDispatch } from "react-redux";
-import { updateCurrentUserReducer } from "../redux/userProfileSlice";
+import {
+  updateAuthentication,
+  updateCurrentUserReducer,
+} from "../redux/userProfileSlice";
 
 Auth.propTypes = {
   signup: PropTypes.bool,
@@ -33,6 +36,13 @@ export function Auth({ signup }) {
   const navigate = useNavigate();
   const toast = useToast();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      dispatch(updateAuthentication(true));
+    }
+  }, []);
 
   // google oauth
   useEffect(() => {
@@ -77,9 +87,10 @@ export function Auth({ signup }) {
       sessionStorage.setItem("user", JSON.stringify(result.data.user, null, 4));
       sessionStorage.setItem("token", result.data.token);
       dispatch(updateCurrentUserReducer(result.data.user));
-
+      dispatch(updateAuthentication(true));
       navigate("/home");
     } else {
+      console.log("Error", result);
       toast({
         title: "Error",
         description: result.response.data,
@@ -97,11 +108,7 @@ export function Auth({ signup }) {
     const { google, googleUserData } = prop;
     const data = google ? googleUserData : userData;
 
-    console.log("handleSignup", data);
-
     const result = await registerAPI(data);
-
-    console.log("result", result);
 
     if (result.status === 201) {
       handleLogin(result.data);
@@ -131,8 +138,6 @@ export function Auth({ signup }) {
     const { email, name, picture, id } = data;
     const username = email.split("@")[0];
     const google = true;
-
-    console.log("signupWithGoogle", name, email, username);
 
     setUserData({
       email,

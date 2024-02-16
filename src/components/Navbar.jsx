@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { RiMailAddLine } from "react-icons/ri";
 import { IoArrowBack } from "react-icons/io5";
@@ -10,8 +10,12 @@ import {
   getUsersRepliedPostsReducer,
   getUsersLikedPostsReducer,
 } from "../redux/allPostsSlice.js";
-import { useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useParams } from "react-router-dom";
+import { getUserAPI } from "../service/allAPI.js";
+import { reqHeaderHelper } from "../utils/reqHeaderHelper.js";
+import { Avatar } from "@chakra-ui/react";
+import { SERVER_URL } from "../service/serverURL.js";
 
 Navbar.propTypes = {
   insideHome: PropTypes.bool,
@@ -243,17 +247,46 @@ function MessageNavbar({ buttonClick }) {
 }
 
 function ChatNavbar() {
+  const { currentChatUser } = useSelector((state) => state.messageSlice);
+  const [currentChatProfile, setCurrentChatProfile] = useState({});
+
+  useEffect(() => {
+    getChatUserProfile();
+  }, [currentChatUser]);
+
+  const getChatUserProfile = async () => {
+    if (currentChatUser) {
+      const reqHeader = reqHeaderHelper("application/json");
+
+      const result = await getUserAPI(currentChatUser, reqHeader);
+
+      if (result.status === 200) {
+        setCurrentChatProfile(result.data);
+      } else {
+        console.error("Error", result.response.data);
+      }
+    }
+  };
+
   return (
     <div className="w-full p-2 flex items-center">
       <div className="flex gap-2 items-center">
         <div className="p-2 lg:hidden ml-auto rounded-full hover:bg-slate-900 transition cursor-pointer">
           <IoArrowBack />
         </div>
-        <img
-          className="w-[50px] h-[50px] object-cover rounded-full"
-          src="https://source.unsplash.com/random"
+        <Avatar
+          name={currentChatProfile?.name}
+          src={
+            (currentChatProfile?.profilePicture &&
+              `${SERVER_URL}/user-image/${currentChatProfile?.profilePicture}`) ||
+            currentChatProfile?.googlePicture
+          }
         />
-        <h3 className="text-xl font-bold text-slate-100">Yadhukrishna CU</h3>
+        <Link to={`/profile/${currentChatProfile?._id}`}>
+          <h3 className="text-xl cursor-pointer font-bold text-slate-100">
+            {currentChatProfile?.name}
+          </h3>
+        </Link>
       </div>
       <div className="p-2 ml-auto rounded-full hover:bg-slate-900 transition cursor-pointer">
         <BsThreeDots />
