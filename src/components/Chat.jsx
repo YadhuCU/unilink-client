@@ -24,6 +24,9 @@ export function Chat() {
   const [user, setUser] = useState({});
   const lastMessageRef = useRef(null);
   const [chatUserProfile, setChatUserProfile] = useState({});
+  const [typing, setTyping] = useState(false);
+  const { socket } = useSelector((state) => state.socketSlice);
+  const [messageType, setMessageType] = useState(false);
 
   useEffect(() => {
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -35,6 +38,28 @@ export function Chat() {
       lastMessageRef.current.scrollIntoView({ smooth: true });
     }
   }, [currentChat]);
+
+  useEffect(() => {
+    socket.on("typing", (arg) => {
+      console.log("arg", arg);
+      if (arg.typing) {
+        setTyping(true);
+      } else {
+        setTyping(false);
+      }
+    });
+    return () => {
+      socket.off("typing");
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (message) {
+      socket.emit("typing", { typing: true, receiverId: currentChatUser });
+    } else {
+      socket.emit("typing", { typing: false, receiverId: currentChatUser });
+    }
+  }, [message]);
 
   useEffect(() => {
     getChatUserProfile();
@@ -74,7 +99,12 @@ export function Chat() {
     if (result.status === 201) {
       setMessage("");
       getMessages();
+      socket.emit("typing", { typing: false, receiverId: currentChatUser });
     }
+  };
+
+  const handleOnchange = (e) => {
+    setMessage(e.target.value);
   };
 
   return (
@@ -119,13 +149,14 @@ export function Chat() {
               }
             }
           })}
+        {typing && <Typing reference={lastMessageRef} />}
       </div>
       {/* message input  */}
       <div className="w-full p-2 flex bg-slate-950">
         <label className="flex w-full px-4 py-2 gap-2 bg-slate-900 rounded-full items-center transition-all">
           <input
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={(e) => handleOnchange(e)}
             onKeyDown={(e) => e.key === "Enter" && addMessage()}
             type="text"
             placeholder="Type Message.."
@@ -162,6 +193,19 @@ function You({ chat, reference }) {
       <span className="text-xs translate-x-1 translate-y-1">
         {chat?.createdAt}
       </span>
+    </div>
+  );
+}
+
+function Typing({ reference }) {
+  return (
+    <div
+      ref={reference}
+      className="bg-slate-800 text-slate-300 h-9 rounded-br-full w-max flex gap-2 items-end my-1 py-2 px-4 relative  rounded-tr-full rounded-tl-full "
+    >
+      <span className="size-3 bg-slate-700 rounded-full typing-animation"></span>
+      <span className="size-3 bg-slate-700 rounded-full typing-animation delay1"></span>
+      <span className="size-3 bg-slate-700 rounded-full typing-animation delay2"></span>
     </div>
   );
 }

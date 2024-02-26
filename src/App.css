@@ -105,3 +105,25 @@
   background-color: var(--clr-white);
   border-radius: 100vw;
 }
+
+.typing-animation {
+  animation: typing1 930ms 0s ease-in-out forwards infinite;
+}
+.typing-animation.delay1 {
+  animation-delay: 300ms;
+}
+.typing-animation.delay2 {
+  animation-delay: 600ms;
+}
+
+@keyframes typing1 {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
